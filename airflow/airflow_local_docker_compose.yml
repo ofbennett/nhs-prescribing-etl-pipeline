@@ -30,6 +30,7 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - AIRFLOW_CONN_MY_POSTGRES_CONN=postgres://user:password@airflow_warehouse_1:5432/database
         logging:
             options:
                 max-size: 10m
