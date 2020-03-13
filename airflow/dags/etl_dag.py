@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from datetime import datetime, timedelta
 
 from helpers import sql_queries
@@ -23,6 +24,34 @@ dag = DAG('etl_dag',
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
+drop_all_tables = PostgresOperator(
+    task_id="drop_all_tables",
+    dag=dag,
+    postgres_conn_id="my_postgres_conn",
+    sql=sql_queries.drop_all_tables
+)
+
+create_all_tables_if_not_exist = PostgresOperator(
+    task_id="create_all_tables_if_not_exist",
+    dag=dag,
+    postgres_conn_id="my_postgres_conn",
+    sql=sql_queries.create_all_tables
+)
+
+populate_all_staging_tables = PostgresOperator(
+    task_id="populate_all_staging_tables",
+    dag=dag,
+    postgres_conn_id="my_postgres_conn",
+    sql=sql_queries.populate_all_staging_tables
+)
+
+insert_all_warehouse_tables = PostgresOperator(
+    task_id="insert_all_warehouse_tables",
+    dag=dag,
+    postgres_conn_id="my_postgres_conn",
+    sql=sql_queries.insert_all_warehouse_tables
+)
+
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
-start_operator >> end_operator
+start_operator >> drop_all_tables >> create_all_tables_if_not_exist >> populate_all_staging_tables >> insert_all_warehouse_tables >> end_operator
