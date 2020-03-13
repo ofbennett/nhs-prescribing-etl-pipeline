@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from datetime import datetime, timedelta
 
+from helpers import sql_queries
 
 default_args = {
     'owner': 'ofbennett',
