@@ -2,7 +2,9 @@ import psycopg2
 import pandas as pd
 from sql_queries import (drop_all_tables, 
                         create_all_tables, 
-                        populate_all_staging_tables, 
+                        populate_all_staging_tables,
+                        insert_all_warehouse_tables,
+                        all_table_names,
                         select_from_table)
 
 def get_db_info(cur):
@@ -29,12 +31,12 @@ def main():
     for populate_stage_table in populate_all_staging_tables:
         cur.execute(populate_stage_table)
         conn.commit()
-    cur.execute(select_from_table.format(table='pres_staging_table'))
-    [print(line) for line in cur.fetchall()]
-    cur.execute(select_from_table.format(table='gp_pracs_staging_table'))
-    [print(line) for line in cur.fetchall()]
-    cur.execute(select_from_table.format(table='bnf_info_staging_table'))
-    [print(line) for line in cur.fetchall()]
+    for insert_table in insert_all_warehouse_tables:
+        cur.execute(insert_table)
+        conn.commit()
+    for table_name in all_table_names:
+        cur.execute(select_from_table.format(table=table_name))
+        [print(line) for line in cur.fetchall()]
 
     cur.close()
     conn.close()

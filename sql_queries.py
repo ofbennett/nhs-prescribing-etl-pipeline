@@ -17,7 +17,7 @@ items int NOT NULL,
 nic float NOT NULL,
 act_cost float NOT NULL,
 quantity float NOT NULL,
-time_period int NOT NULL
+time_period text NOT NULL
 );
 """)
 
@@ -30,8 +30,8 @@ items int NOT NULL,
 nic float NOT NULL,
 act_cost float NOT NULL,
 quantity float NOT NULL,
-month int NOT NULL,
-year int NOT NULL
+month int NOT NULL CHECK (month BETWEEN 1 AND 12),
+year int NOT NULL CHECK (year BETWEEN 1970 AND 2050)
 );
 """)
 
@@ -122,6 +122,29 @@ DELIMITER ','
 CSV HEADER;
 """)
 
+pres_fact_table_insert = ("""
+INSERT INTO pres_fact_table
+(practice_id, bnf_code, items, nic, act_cost, quantity, month, year)
+SELECT practice_id, bnf_code, items, nic, act_cost, quantity, 
+CAST(RIGHT(time_period, 2) AS int), 
+CAST(LEFT(time_period, 4) AS int)
+FROM pres_staging_table;
+""")
+
+gp_pracs_dim_table_insert = ("""
+INSERT INTO gp_pracs_dim_table
+(gp_prac_id, name, postcode)
+SELECT gp_prac_id, addr1, postcode
+FROM gp_pracs_staging_table;
+""")
+
+bnf_info_dim_table_insert = ("""
+INSERT INTO bnf_info_dim_table
+(bnf_chapter, bnf_section, bnf_paragraph, bnf_subparagraph, bnf_chemical_sub, bnf_product, bnf_presentation, bnf_code)
+SELECT bnf_chapter, bnf_section, bnf_paragraph, bnf_subparagraph, bnf_chemical_sub, bnf_product, bnf_presentation, bnf_presentation_code
+FROM bnf_info_staging_table;
+""")
+
 select_from_table = ("""
 SELECT *
 FROM {table}
@@ -133,3 +156,7 @@ drop_all_tables = [pres_staging_table_drop, pres_fact_table_drop, gp_pracs_stagi
 create_all_tables = [pres_staging_table_create, pres_fact_table_create, gp_pracs_staging_table_create, gp_pracs_dim_table_create, bnf_info_staging_table_create, bnf_info_dim_table_create]
 
 populate_all_staging_tables = [pres_staging_table_populate, gp_prac_staging_table_populate, bnf_info_staging_table_populate]
+
+insert_all_warehouse_tables = [pres_fact_table_insert, gp_pracs_dim_table_insert, bnf_info_dim_table_insert]
+
+all_table_names = ['pres_staging_table','gp_pracs_staging_table', 'bnf_info_staging_table', 'pres_fact_table', 'gp_pracs_dim_table', 'bnf_info_dim_table']
