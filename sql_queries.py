@@ -90,7 +90,7 @@ bnf_code text PRIMARY KEY
 
 pres_staging_table_populate = ("""
 COPY pres_staging_table(sha, pct, practice_id, bnf_code, bnf_name, items, nic, act_cost, quantity, time_period)
-FROM '/home/T201911PDPI_BNFT.csv'
+FROM '/home/T201911PDPI_BNFT_small.csv'
 DELIMITER ',' 
 CSV HEADER;
 """)
