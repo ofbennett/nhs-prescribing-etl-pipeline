@@ -145,6 +145,18 @@ SELECT bnf_chapter, bnf_section, bnf_paragraph, bnf_subparagraph, bnf_chemical_s
 FROM bnf_info_staging_table;
 """)
 
+quality_tests = [
+    {'sql': "SELECT COUNT(*) FROM pres_fact_table", 'shouldBe': '>', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM gp_pracs_dim_table", 'shouldBe': '>', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM bnf_info_dim_table", 'shouldBe': '>', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM pres_fact_table WHERE (pres_id is null)", 'shouldBe': '==', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM pres_fact_table WHERE (practice_id is null)", 'shouldBe': '==', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM pres_fact_table WHERE (bnf_code is null)", 'shouldBe': '==', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM gp_pracs_dim_table WHERE (gp_prac_id is null)", 'shouldBe': '==', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM bnf_info_dim_table WHERE (bnf_code is null)", 'shouldBe': '==', 'value': 0},
+    {'sql': "SELECT COUNT(*) FROM bnf_info_dim_table WHERE (bnf_chapter is null)", 'shouldBe': '==', 'value': 0},    
+    ]
+
 select_from_table = ("""
 SELECT *
 FROM {table}

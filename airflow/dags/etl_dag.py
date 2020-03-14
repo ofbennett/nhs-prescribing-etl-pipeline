@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.postgres_operator import PostgresOperator
+from operators.data_quality import DataQualityOperator
 from datetime import datetime, timedelta
 from helpers import sql_queries
 
@@ -13,7 +14,7 @@ default_args = {
     'email_on_retry': False
 }
 
-dag = DAG('etl_dag_split',
+dag = DAG('etl_dag',
           default_args=default_args,
           description='Load and transform data into Postgres database with Airflow',
           schedule_interval='@monthly',
@@ -79,6 +80,12 @@ bnf_info_dim_table_insert = PostgresOperator(
     sql=sql_queries.bnf_info_dim_table_insert
 )
 
+run_quality_checks = DataQualityOperator(
+    task_id='Run_data_quality_checks',
+    dag=dag,
+    quality_checks=sql_queries.quality_tests
+)
+
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 start_operator >> drop_all_tables >> create_all_tables_if_not_exist
@@ -86,4 +93,5 @@ create_all_tables_if_not_exist >> [pres_staging_table_populate, gp_prac_staging_
 pres_staging_table_populate >> pres_fact_table_insert
 gp_prac_staging_table_populate >> gp_pracs_dim_table_insert
 bnf_info_staging_table_populate >> bnf_info_dim_table_insert
-[pres_fact_table_insert, gp_pracs_dim_table_insert, bnf_info_dim_table_insert] >> end_operator
+[pres_fact_table_insert, gp_pracs_dim_table_insert, bnf_info_dim_table_insert] >> run_quality_checks
+run_quality_checks >> end_operator
