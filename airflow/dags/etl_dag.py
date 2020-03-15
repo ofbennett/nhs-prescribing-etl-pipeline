@@ -59,6 +59,13 @@ bnf_info_staging_table_populate = PostgresOperator(
     sql=sql_queries.bnf_info_staging_table_populate
 )
 
+postcode_info_staging_table_populate = PostgresOperator(
+    task_id="postcode_info_staging_table_populate",
+    dag=dag,
+    postgres_conn_id="my_postgres_conn",
+    sql=sql_queries.postcode_info_staging_table_populate
+)
+
 pres_fact_table_insert = PostgresOperator(
     task_id="pres_fact_table_insert",
     dag=dag,
@@ -89,7 +96,10 @@ run_quality_checks = DataQualityOperator(
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 start_operator >> drop_all_tables >> create_all_tables_if_not_exist
-create_all_tables_if_not_exist >> [pres_staging_table_populate, gp_prac_staging_table_populate, bnf_info_staging_table_populate]
+create_all_tables_if_not_exist >> [pres_staging_table_populate, 
+                                    gp_prac_staging_table_populate, 
+                                    bnf_info_staging_table_populate, 
+                                    postcode_info_staging_table_populate]
 pres_staging_table_populate >> pres_fact_table_insert
 gp_prac_staging_table_populate >> gp_pracs_dim_table_insert
 bnf_info_staging_table_populate >> bnf_info_dim_table_insert
