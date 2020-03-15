@@ -9,7 +9,7 @@ This script takes a GP practices info CSV file, extracts the postcodes of all th
 """
 
 api_url = "https://api.postcodes.io/postcodes"
-data_path = "./data/2019_11_Nov/T201911ADDR BNFT.csv"
+data_path = "../data/2019_11_Nov/T201911ADDR BNFT.csv"
 out_file_path = './postcode_info.json'
 
 col_names = ['time_period','gp_prac_id','addr1','addr2','addr3','addr4','addr5','postcode']
@@ -36,9 +36,21 @@ for i in tqdm(range(0, len(postcode_np), step_size)):
 
 postcode_ls = postcode_np.tolist()
 
-json_data = {'all_postcodes': postcode_ls, 'postcode_info': postcode_info}
+# Remove None responses
+postcode_info_cleaned = []
+n=0
+for i in range(len(postcode_info)):
+    if postcode_info[i]['result'] != None:
+        postcode_info_cleaned.append(postcode_info[i])
+    else:
+        n+=1
+        continue
 
-print("Final postcode info list has {} items in it".format(len(postcode_info)))
+print("Removed {} None responses".format(n))
+
+json_data = {'all_postcodes_attempted': postcode_ls, 'postcode_info': postcode_info_cleaned}
+
+print("Final postcode info list has {} items in it".format(len(postcode_info_cleaned)))
 print("Saving postcode info to file {}".format(out_file_path))
 
 with open(out_file_path, 'w') as f:
