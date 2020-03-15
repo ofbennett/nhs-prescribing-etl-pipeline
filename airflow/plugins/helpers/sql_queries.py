@@ -53,7 +53,11 @@ gp_pracs_dim_table_create = ("""
 CREATE TABLE IF NOT EXISTS gp_pracs_dim_table (
 gp_prac_id text PRIMARY KEY,
 name text NOT NULL,
-postcode text
+postcode text,
+county text,
+region text,
+longitude float,
+latitude float
 );
 """)
 
@@ -151,9 +155,11 @@ FROM pres_staging_table;
 
 gp_pracs_dim_table_insert = ("""
 INSERT INTO gp_pracs_dim_table
-(gp_prac_id, name, postcode)
-SELECT gp_prac_id, addr1, postcode
-FROM gp_pracs_staging_table;
+(gp_prac_id, name, postcode, region, county, longitude, latitude)
+SELECT gp.gp_prac_id, gp.addr1, gp.postcode, pc.region, pc.county, pc.longitude, pc.latitude
+FROM gp_pracs_staging_table gp
+LEFT JOIN postcode_info_staging_table pc
+ON(gp.postcode = pc.postcode);
 """)
 
 bnf_info_dim_table_insert = ("""

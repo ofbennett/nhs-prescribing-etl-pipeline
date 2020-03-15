@@ -101,7 +101,7 @@ create_all_tables_if_not_exist >> [pres_staging_table_populate,
                                     bnf_info_staging_table_populate, 
                                     postcode_info_staging_table_populate]
 pres_staging_table_populate >> pres_fact_table_insert
-gp_prac_staging_table_populate >> gp_pracs_dim_table_insert
+[gp_prac_staging_table_populate, postcode_info_staging_table_populate] >> gp_pracs_dim_table_insert
 bnf_info_staging_table_populate >> bnf_info_dim_table_insert
 [pres_fact_table_insert, gp_pracs_dim_table_insert, bnf_info_dim_table_insert] >> run_quality_checks
 run_quality_checks >> end_operator
