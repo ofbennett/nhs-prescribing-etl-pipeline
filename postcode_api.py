@@ -55,11 +55,12 @@ json_data = {'all_postcodes_attempted': postcode_ls, 'postcode_info': postcode_i
 print("Final postcode info list has {} items in it".format(len(postcode_info_cleaned)))
 print("Saving postcode info to json file {}".format(out_json_file_path))
 
+# Save json file
 with open(out_json_file_path, 'w') as f:
     json.dump(json_data, f)
 
+# Create pandas dataframe from desired postcode info and save to csv file
 df_clean_csv = pd.DataFrame(index=np.arange(0, len(postcode_info_cleaned)), columns=('postcode', 'county', 'region', 'longitude', 'latitude'))
-
 for i in np.arange(0, len(postcode_info_cleaned)):
     jrow = postcode_info_cleaned[i]['result']
     df_clean_csv.loc[i] = [jrow['postcode'], jrow['admin_county'], jrow['region'], jrow['longitude'], jrow['latitude']]
