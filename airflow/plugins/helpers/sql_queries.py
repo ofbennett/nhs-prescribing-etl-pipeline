@@ -105,7 +105,7 @@ latitude float
 
 pres_staging_table_populate = ("""
 COPY pres_staging_table(sha, pct, practice_id, bnf_code, bnf_name, items, nic, act_cost, quantity, time_period)
-FROM '/home/T201911PDPI_BNFT_small.csv'
+FROM '/home/T201911PDPI_BNFT.csv'
 DELIMITER ',' 
 CSV HEADER;
 """)
