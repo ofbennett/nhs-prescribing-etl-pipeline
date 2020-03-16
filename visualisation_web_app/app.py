@@ -18,7 +18,7 @@ app = dash.Dash(__name__)
 df = pd.read_csv(data_path)
 
 config = configparser.ConfigParser()
-config.read('config.cfg')
+config.read('../config.cfg')
 px.set_mapbox_access_token(config['MAPBOX']['MAPBOX_TOKEN'])
 
 fig = px.scatter_mapbox(df, 
