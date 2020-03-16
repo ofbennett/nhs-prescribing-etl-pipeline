@@ -14,9 +14,9 @@ default_args = {
     'email_on_retry': False
 }
 
-dag = DAG('etl_dag',
+dag = DAG('etl_dag_local',
           default_args=default_args,
-          description='Load and transform data into Postgres database with Airflow',
+          description='Load and transform data into local Postgres database with Airflow',
           schedule_interval='@monthly',
           catchup=False,
           max_active_runs=1
