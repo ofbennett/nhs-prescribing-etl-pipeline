@@ -6,18 +6,18 @@ class DataQualityOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 redshift_conn_id="my_postgres_conn",
+                 conn_id="my_postgres_conn",
                  quality_checks=[],
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
-        self.redshift_conn_id = redshift_conn_id
+        self.conn_id = conn_id
         self.quality_checks=quality_checks
         
 
     def execute(self, context):
         self.log.info('Starting data quality checks')
-        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
+        redshift = PostgresHook(postgres_conn_id=self.conn_id)
         failed_tests = []
         failed_num = 0
         for i, test in enumerate(self.quality_checks):
