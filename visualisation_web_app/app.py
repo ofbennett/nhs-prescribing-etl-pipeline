@@ -7,7 +7,10 @@ import pandas as pd
 import numpy as np
 import configparser
 
-data_path = './data/0datafile.csv'
+data_dir = './data_cloud/'
+# data_dir = './data_local/'
+data_path = data_dir+'0datafile.csv'
+
 colors = {
     'background': '#111111',
     'text': 'lightgrey'
@@ -59,7 +62,7 @@ graph = html.Div(children=[
                         'color':colors['text'], 
                         'margin':0, 
                         'padding':10}),
-                html.Div(children="Built with Plotly Dash, Flask, and Mapbox", 
+                html.Div(children="This web app was built with Plotly Dash, Flask, and Mapbox", 
                     style={'textAlign':'center', 
                         'color':colors['text']}),
                 html.Div([dropdown],
@@ -82,7 +85,7 @@ def update_map(selected_med):
                 'Bronchodilators':4}
 
     med_num = med_dict[selected_med]
-    data_path = './data/{}datafile.csv'.format(med_num)
+    data_path = data_dir + '{}datafile.csv'.format(med_num)
     df = pd.read_csv(data_path)
     max_val = df['total_cost'].max()
 

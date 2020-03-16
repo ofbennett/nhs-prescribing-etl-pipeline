@@ -1,5 +1,6 @@
 import psycopg2
 import pandas as pd
+import configparser
 
 meds = ['Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
 
@@ -10,7 +11,7 @@ JOIN gp_pracs_dim_table gp
 ON(pre.practice_id = gp.gp_prac_id)
 JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
-WHERE bnf.bnf_section='{}'
+WHERE bnf.bnf_section=''{}''
 AND gp.longitude IS NOT NULL
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
@@ -21,21 +22,20 @@ def get_db_info(cur):
     print("Connected to database:")
     print(version)
 
-def connect_db():
+def connect_db_local():
     conn = psycopg2.connect("host=127.0.0.1 dbname=database user=user password=password")
     cur = conn.cursor()
     return conn, cur
 
 def main():
-    conn, cur = connect_db()
-    get_db_info(cur)
 
-    # cur.execute(q)
-    # [print(line) for line in cur.fetchall()]    
+    conn, cur = connect_db_local()
+    get_db_info(cur)
    
     for i, med in enumerate(meds):
-        outfile = './data/{}datafile.csv'.format(i)
+        outfile = './data_local/{}datafile.csv'.format(i)
         query = q.format(med)
+        cur.execute(query)
         outputquery = "COPY ({}) TO STDOUT WITH CSV HEADER".format(query)
         with open(outfile, 'w') as f:
             cur.copy_expert(outputquery, f)
