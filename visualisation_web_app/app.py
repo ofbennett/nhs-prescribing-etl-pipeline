@@ -63,7 +63,8 @@ graph = html.Div(children=[
                     style={'textAlign':'center', 
                         'color':colors['text'], 
                         'margin':0, 
-                        'padding':20}),
+                        'padding':20,
+                        'text-decoration': 'underline'}),
                 html.Div(children="A visualisation of publicly available GP prescription records from NHS digital", 
                     style={'textAlign':'center', 
                         'color':colors['text'],
@@ -78,7 +79,7 @@ graph = html.Div(children=[
                 dcc.Graph(figure=fig, id = 'map')], 
                 style={'backgroundColor':colors['background']})
 
-mdtext = dcc.Markdown(
+mdtext1 = dcc.Markdown(
 """
 # What is this?
 
@@ -92,7 +93,7 @@ At the moment this *only* displays the pattern from prescriptions in the month o
 
 The data comes from a large volume (~100GB) of anonymised GP prescription records which have been released publicly by [NHS digital](https://digital.nhs.uk). The data can be downloaded from their website [here](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data) and a detailed description of what the data contains can be found [here](https://digital.nhs.uk/data-and-information/areas-of-interest/prescribing/practice-level-prescribing-in-england-a-summary/practice-level-prescribing-data-more-information). This public sector information is published and made available under the [Open Government Licence v3.0](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 
-The prescribed medication in this dataset is referenced with a code used by the British National Formulary (BNF). An extra dataset (~19MB) providing more extensive information and categorisation of each of these medications from the BNF was downloaded from the NHS Business Services Authority website ([here](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)).
+The prescribed medication in this dataset is referenced with a code used by the British National Formulary (BNF). An extra dataset (~19MB) providing more information and categorisation of each of these medications from the BNF was downloaded from the NHS Business Services Authority website ([here](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)).
 
 Finally, a free and open source API called [Postcodes.io](https://postcodes.io) was used to obtain latitude and longitude coordinates (as well as other location metadata) of the GP practices in the dataset to make plotting them easier.
 
@@ -101,8 +102,12 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 # How was it made?
 
  This web app was built with **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on ... There is a very large volume of data to process to generate these visualisations so it presented an interesting engineering problem. The partially cloud based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built with **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
+ """,
+ style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
 
-![](https://github.com/ofbennett/CNN_MNIST/raw/master/resources/MNIST_example1.png)
+diagram = html.Img(src="assets/diagram.png",style = {"width": "60%", "display": "block" , "margin-left": "auto","margin-right": "auto"})
+
+mdtext2 = dcc.Markdown("""
 
 Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once there it is simple to run any SQL query you like against it. The visualisation being demonstrated above was created by running a query related to the amount of medication in a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
@@ -122,7 +127,7 @@ Hey I'm Oscar. I like learning things from data. I'm a data scientist and softwa
 style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10}
 )
 
-app.layout = html.Div([graph, mdtext], style={'backgroundColor':colors['background']})
+app.layout = html.Div([graph, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 
 @app.callback(
     Output('map','figure'),
