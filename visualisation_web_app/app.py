@@ -4,7 +4,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
-import numpy as np
 import configparser
 
 data_dir = './data_cloud/'
@@ -23,7 +22,7 @@ app = dash.Dash(__name__)
 df = pd.read_csv(data_path)
 
 config = configparser.ConfigParser()
-config.read('../config.cfg')
+config.read('./config.cfg')
 px.set_mapbox_access_token(config['MAPBOX']['MAPBOX_TOKEN'])
 
 fig = px.scatter_mapbox(df, 
@@ -168,4 +167,4 @@ def update_map(selected_med):
     return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
