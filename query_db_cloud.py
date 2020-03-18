@@ -55,7 +55,7 @@ def main():
     print("Downloading query results from s3...")
     s3 = boto3.client('s3')
     for i, med in enumerate(meds):
-        directory = './data_cloud/{}'.format(i)
+        directory = './visualisation_web_app/data_cloud/{}'.format(i)
         if not os.path.exists(directory):
             os.makedirs(directory)
         files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/'+str(i)+'/')
@@ -64,10 +64,10 @@ def main():
     
     print("Processing downloaded files...")
     for i, med in enumerate(meds):
-        paths = './data_cloud/{}/*.csv'.format(i)
+        paths = './visualisation_web_app/data_cloud/{}/*.csv'.format(i)
         files = glob.glob(paths)
         df_concat = pd.concat([pd.read_csv(f) for f in files])
-        df_concat.to_csv('./data_cloud/{}datafile.csv'.format(i),index=False)
+        df_concat.to_csv('./visualisation_web_app/data_cloud/{}datafile.csv'.format(i),index=False)
 
 if __name__ == "__main__":
     main()

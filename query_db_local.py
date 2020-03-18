@@ -33,7 +33,7 @@ def main():
     get_db_info(cur)
    
     for i, med in enumerate(meds):
-        outfile = './data_local/{}datafile.csv'.format(i)
+        outfile = './visualisation_web_app/data_local/{}datafile.csv'.format(i)
         query = q.format(med)
         cur.execute(query)
         outputquery = "COPY ({}) TO STDOUT WITH CSV HEADER".format(query)
