@@ -32,7 +32,7 @@ def connect_db_redshift(config):
 
 def main():
     config = configparser.ConfigParser()
-    config.read('../config.cfg')
+    config.read('./config.cfg')
     conn, cur = connect_db_redshift(config)
     get_db_info(cur)
 
