@@ -18,4 +18,4 @@ services:
     volumes:
       - ./ssl/certbot/conf:/etc/letsencrypt
       - ./ssl/certbot/www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email ofbennett@gmail.com --agree-tos --no-eff-email --staging -d talktin.com  -d www.talktin.com 
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ofbennett@gmail.com --agree-tos --no-eff-email --force-renewal -d talktin.com  -d www.talktin.com 
