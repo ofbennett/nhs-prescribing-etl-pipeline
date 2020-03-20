@@ -1,0 +1,21 @@
+version: '3'
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx_init_ssl
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+  
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    depends_on: 
+        - nginx
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ofbennett@gmail.com --agree-tos --no-eff-email --staging -d talktin.com  -d www.talktin.com 
