@@ -10,7 +10,6 @@ RUN venv/bin/pip install -r requirements.txt
 RUN venv/bin/pip install gunicorn
 
 COPY app.py ./app.py
-COPY wsgi.py ./wsgi.py
 COPY data_cloud ./data_cloud
 COPY assets ./assets
 COPY boot.sh ./boot.sh
