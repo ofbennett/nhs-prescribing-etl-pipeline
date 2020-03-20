@@ -104,10 +104,9 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
  """,
  style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
 
-diagram = html.Img(src="assets/diagram.png",style = {"width": "60%", "display": "block" , "margin-left": "auto","margin-right": "auto"})
+diagram = html.Img(src="assets/diagram.png",style = {"width": "60%", "display": "block" , "margin-left": "auto", "margin-right": "auto"})
 
 mdtext2 = dcc.Markdown("""
-
 Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once there it is simple to run any SQL query you like against it. The visualisation being demonstrated above was created by running a query related to the amount of medication in a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
 &nbsp;
@@ -166,5 +165,6 @@ def update_map(selected_med):
                     )
     return fig
 
+server = app.server # for gunicorn to import 
 if __name__ == '__main__':
     app.run_server(debug=False)
