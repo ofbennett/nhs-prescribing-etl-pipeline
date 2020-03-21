@@ -99,7 +99,7 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 
 # How was it made?
 
- This web app was built using **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on DigitalOcean. There is a very large volume of data to process to generate these visualisations so it presented an interesting engineering problem. The partially cloud-based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built using **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
+ This web app was built using **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on DigitalOcean. There is a very large volume of data to process in order to generate these visualisations. The data pipeline therefore presented an interesting engineering problem. The partially cloud-based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built using **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
  """,
  style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
 
