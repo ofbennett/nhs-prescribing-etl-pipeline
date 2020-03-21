@@ -2,7 +2,7 @@ import psycopg2
 import pandas as pd
 import configparser
 
-meds = ['Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
+meds = ['All','Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
 
 q = """
 SELECT SUM(pre.nic) as total_cost, gp.name, gp.longitude, gp.latitude
@@ -11,8 +11,19 @@ JOIN gp_pracs_dim_table gp
 ON(pre.practice_id = gp.gp_prac_id)
 JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
-WHERE bnf.bnf_section=''{}''
+WHERE bnf.bnf_section='{}'
 AND gp.longitude IS NOT NULL
+GROUP BY gp.name, gp.longitude, gp.latitude
+"""
+
+q_all = """
+SELECT SUM(pre.nic) as total_cost, gp.name, gp.longitude, gp.latitude
+FROM pres_fact_table pre
+JOIN gp_pracs_dim_table gp
+ON(pre.practice_id = gp.gp_prac_id)
+JOIN bnf_info_dim_table bnf
+ON(pre.bnf_code=bnf.bnf_code)
+WHERE gp.longitude IS NOT NULL
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
 
@@ -34,7 +45,10 @@ def main():
    
     for i, med in enumerate(meds):
         outfile = './visualisation_web_app/data_local/{}datafile.csv'.format(i)
-        query = q.format(med)
+        if med == 'All':
+            query = q_all
+        else:
+            query = q.format(med)
         cur.execute(query)
         outputquery = "COPY ({}) TO STDOUT WITH CSV HEADER".format(query)
         with open(outfile, 'w') as f:

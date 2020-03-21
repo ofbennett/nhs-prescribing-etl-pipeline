@@ -44,8 +44,9 @@ fig.update_layout(autosize=True,
 
 dropdown = dcc.Dropdown(
     id = 'dropdown',
-    value = 'Antibacterial Drugs',
+    value = 'All',
     options = [
+        {'label': 'All', 'value': 'All'},
         {'label': 'Antibiotics', 'value': 'Antibacterial Drugs'},
         {'label': 'Antiprotozoal Drugs', 'value': 'Antiprotozoal Drugs'},
         {'label': 'Diuretics', 'value': 'Diuretics'},
@@ -131,11 +132,12 @@ app.layout = html.Div([graph, mdtext1, diagram, mdtext2], style={'backgroundColo
 )
 def update_map(selected_med):
 
-    med_dict = {'Antibacterial Drugs':0,
-                'Antiprotozoal Drugs':1,
-                'Diuretics':2, 
-                'Beta-Adrenoceptor Blocking Drugs':3,
-                'Bronchodilators':4}
+    med_dict = {'All':0,
+                'Antibacterial Drugs':1,
+                'Antiprotozoal Drugs':2,
+                'Diuretics':3,
+                'Beta-Adrenoceptor Blocking Drugs':4,
+                'Bronchodilators':5}
 
     med_num = med_dict[selected_med]
     data_path = data_dir + '{}datafile.csv'.format(med_num)

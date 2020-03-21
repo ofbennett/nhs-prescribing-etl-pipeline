@@ -5,7 +5,7 @@ import os
 import boto3
 import glob
 
-meds = ['Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
+meds = ['All','Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
 
 q = """
 SELECT SUM(pre.nic) as total_cost, gp.name, gp.longitude, gp.latitude
@@ -16,6 +16,17 @@ JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
 WHERE bnf.bnf_section=''{}''
 AND gp.longitude IS NOT NULL
+GROUP BY gp.name, gp.longitude, gp.latitude
+"""
+
+q_all = """
+SELECT SUM(pre.nic) as total_cost, gp.name, gp.longitude, gp.latitude
+FROM pres_fact_table pre
+JOIN gp_pracs_dim_table gp
+ON(pre.practice_id = gp.gp_prac_id)
+JOIN bnf_info_dim_table bnf
+ON(pre.bnf_code=bnf.bnf_code)
+WHERE gp.longitude IS NOT NULL
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
 
@@ -38,8 +49,11 @@ def main():
 
     print("Running queries and saving to s3...")
     for i, med in enumerate(meds):
-        query = q.format(med)
-        query = """
+        if med == 'All':
+            query = q_all
+        else:
+            query = q.format(med)
+        query_final = """
                 UNLOAD('{}')
                 TO 's3://prescribing-data/unload/{}/'
                 IAM_ROLE '{}'
@@ -47,7 +61,7 @@ def main():
                 HEADER
                 ALLOWOVERWRITE;
                 """.format(query,i,config['CLUSTER']['IAM_ROLE'])
-        cur.execute(query)
+        cur.execute(query_final)
 
     cur.close()
     conn.close()
