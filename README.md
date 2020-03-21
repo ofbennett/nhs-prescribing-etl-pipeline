@@ -6,7 +6,7 @@ This is a cloud based ETL data pipeline which feeds into a web app visualisation
 - To provide a way to populate a cloud-based data warehouse in order to make it convenient to run queries and answer any question you might care to ask
 - Demontrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related "Big Data"
 
-<p align="center"><img src="./resources/map_viz.png" width="700"></p>
+<p align="center"><img src="./resources/map_viz.png" width="800"></p>
 
 ## The Architecture
 
@@ -28,9 +28,9 @@ As shown, the data is trasformed into a useful schema and loaded into an AWS Red
 - A local Python script is run which runs a series of queries against the data warehouse and saves the results as CSV files in an S3 bucket
 - These results are sent to the web app which generates a visualisation
 
-Apache Airflow is used to schedule and orchestrate the steps in bold. The dependancy DAG is illustrated here:
+Apache Airflow is used to schedule and orchestrate the steps in **bold**. The dependancy DAG is illustrated here:
 
-<p align="center"><img src="./resources/airflow.png" width="700"></p>
+<p align="center"><img src="./resources/airflow.png" width="900"></p>
 
 ## The Data Sources
 
@@ -44,15 +44,19 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 
 The schema used in the data warehouse is demonstrated in this diagram:
 
-<p align="center"><img src="./resources/schema.png" width="700"></p>
+<p align="center"><img src="./resources/schema.png" width="800"></p>
 
 ## Data Quality Checks
 
-
-
-## Airflow
+Data quality checks are carried out by a custom operator. These ensure that rows are present in the fact and dimention tables and that certain columns do not contain any null values. 
 
 ## Alternative Data Scenarios
+
+- **Data increased by x100**
+
+- **Pipeline needs to be run every morning at 7am**
+
+- **Database needs to be accessed by 100+ people**
 
 ## The Visualisation Web App
 
