@@ -52,11 +52,11 @@ dropdown = dcc.Dropdown(
         {'label': 'Beta Blockers', 'value': 'Beta-Adrenoceptor Blocking Drugs'},
         {'label': 'Bronchodilators', 'value': 'Bronchodilators'},
     ],
-    style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%'}
+    style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
 
 graph = html.Div(children=[
-                html.H1(children='Medical Prescribing Patterns Across NHS GP Practices', 
+                html.H1(children='Medical Prescribing Patterns Across England NHS GP Practices', 
                     style={'textAlign':'center', 
                         'color':colors['text'], 
                         'margin':0, 
@@ -71,7 +71,7 @@ graph = html.Div(children=[
                         'color':colors['text'],
                         'padding':0,
                         'margin-right':40}),
-                html.Div([dropdown],
+                html.Div(["Select the type of medication to display:",dropdown],
                 style = {'backgroundColor':colors['background'],'width': '25%', 'margin-left': 30}),
                 dcc.Graph(figure=fig, id = 'map')], 
                 style={'backgroundColor':colors['background']})
@@ -80,7 +80,7 @@ mdtext1 = dcc.Markdown(
 """
 # What is this?
 
-This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
+This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
 At the moment this *only* displays the pattern from prescriptions in the month of November 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
 
@@ -98,14 +98,14 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 
 # How was it made?
 
- This web app was built with **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on DigitalOcean. There is a very large volume of data to process to generate these visualisations so it presented an interesting engineering problem. The partially cloud based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built with **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
+ This web app was built using **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on DigitalOcean. There is a very large volume of data to process to generate these visualisations so it presented an interesting engineering problem. The partially cloud-based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built using **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
  """,
  style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
 
 diagram = html.Img(src="assets/diagram.png",style = {"width": "65%", "display": "block" , "margin-left": "auto", "margin-right": "auto"})
 
 mdtext2 = dcc.Markdown("""
-Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once there it is simple to run any SQL query you like against it. The visualisation being demonstrated above was created by running a query related to the amount of medication in a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables Redshift. The visualisation being demonstrated above was created by running a query related to the amount of medication in a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
 &nbsp;
 
