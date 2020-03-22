@@ -270,5 +270,6 @@ There are numerous ways this project could be extended.
 - Consider the addition of an EMR Spark cluster into the setup.
 - Draw in more data to enrich the data model. Perhaps data associated with the GP practice locations (local measures of disease burden, socioeconomic factors, local public health metrics, weather etc).
 - Build predictive models to try to understand the variance across geography and time of the observed trends.
+- Feel free to suggest more!
 
 Please feel free to raise issues or contribute.
