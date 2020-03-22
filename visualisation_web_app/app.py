@@ -106,7 +106,7 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 diagram = html.Img(src="assets/diagram.png",style = {"width": "65%", "display": "block" , "margin-left": "auto", "margin-right": "auto"})
 
 mdtext2 = dcc.Markdown("""
-Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables Redshift. The visualisation being demonstrated above was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+Essentially the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation being demonstrated above was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
 &nbsp;
 
@@ -118,7 +118,7 @@ Of course! It's kept in my GitHub repo [here](https://github.com/ofbennett/NHS_P
 
 # Who am I?
 
-Hey I'm Oscar. I like learning things from data. I'm a data scientist and software engineer with a particular focus on biomedical and healthcare applications. If you're curious you can checkout my [Github](https://github.com/ofbennett) or my [LinkedIn](https://www.linkedin.com/in/oscar-bennett/).
+I'm Oscar. I like learning things from data. I'm a data scientist and software engineer with a particular focus on biomedical and healthcare applications. If you're curious you can checkout my [Github](https://github.com/ofbennett) or my [LinkedIn](https://www.linkedin.com/in/oscar-bennett/).
 
 """,
 style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10}
