@@ -82,17 +82,17 @@ This is a visualisation of patterns of GP prescribing across England. Different 
 
 This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.talktin.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers build and run with docker-compose.
 
-In order to setup SSL/TSL and serve the app securely over https I setup a reasonably simple two step deployment process using [Let's Encrypt](https://letsencrypt.org) as a certificate authority. This process proceeded like this:
+In order to enable SSL/TSL and serve the app securely over https I setup a reasonably simple two step deployment process using [Let's Encrypt](https://letsencrypt.org) as a certificate authority. This process proceeded like this:
 - Ran a simple Nginx server over http along with an installation of certbot (the official certbot docker image)
 - Ran the certbot server challenge to obtain an SSL certificant for the chosen domain name
 - Removed this simple server
-- Finally installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using the previously acquired SSL certificate and key
+- Installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using the previously acquired SSL certificate and key
 
 For details on how to run this process see below.
 
 ## How To Run the ETL Pipeline
 
-If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Next create a suitable python virtual environment.
+If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Then create a suitable python virtual environment.
 
 ```
 $ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
@@ -107,7 +107,7 @@ You need to get the data first before running the pipeline. You can download all
 - [Prescription data and GP Practice info](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data)
 - [BNF info](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)
 
-Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the API provided by [Postcodes.io](https://postcodes.io). A python script is provided which does this. Make sure the file names and paths at the top are correct and run it:
+Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the free API provided by [Postcodes.io](https://postcodes.io). I wrote a Python script which does this. Make sure the file names and paths at the top of this script are correct and run it:
 
 ```
 $ python postcode_api.py
@@ -119,7 +119,7 @@ There are two ways to run the ETL pipeline. You can either run it on your local 
 
 ### How to run the ETL pipeline locally
 
-This version of the pipeline runs ETL locally and sets up a data warehouse in a local installation of Postgres (instead of Redshift). Run:
+This version of the pipeline runs ETL on your local machine and sets up a data warehouse in a local installation of Postgres (instead of Redshift). Run:
 
 ```
 $ cd airflow
@@ -129,7 +129,7 @@ This will start docker containers with airflow backed by a postgres database alo
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages. Select the etl_dag_local DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Postgres data warehouse is now populated. To run some queries there is a python script which will do this and save the results into the webapp for later visualisation. Run:
+The Postgres data warehouse is now populated. To run some queries I wrote a [python script](./query_db_local.py) which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ..
@@ -149,7 +149,7 @@ This version of the pipeline runs ETL on AWS and sets up a data warehouse in a R
 
 Explaining how to do this is beyond the scope of this doc, but have a look [here](https://docs.aws.amazon.com/redshift/latest/gsg/rs-gsg-launch-sample-cluster.html) and [here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) if you need help.
 
-You will also need the aws [cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html). You will need to copy your aws credentials into the `.aws/credentials` file.
+You will also need the [aws cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and to copy your aws credentials into your `.aws/credentials` file.
 
 You need to create a config.cfg file from the template provided to locally contain your Redshift cluster details. Make sure you are in the repo top directory and run:
 
@@ -163,7 +163,7 @@ Next run:
 $ cd airflow
 $ docker-compose -f airflow_cloud_docker_compose.yml up -d --build
 ```
-This will start docker containers with Airflow backed by a Postgres database running and linked together in a private network. Next you need to copy the data to the S3 data lake. This can be done using the `aws s3 cp` command. An [example script](./resources/copy_data_to_data_lake.sh) is provided which can be adapted to carry this out easily.
+This will start docker containers with Airflow backed by a Postgres database running and linked together in a private network. Next you need to copy the local data to the S3 data lake. This can be done using the `aws s3 cp` command. An [example script](./resources/copy_data_to_data_lake.sh) is provided which can be adapted to carry this out easily.
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. You will now need to create two custom airflow connections:
 
@@ -172,7 +172,7 @@ Open a browser and go to `localhost:8080`. This should bring up the Airflow UI w
 
 Next, select the etl_dag_cloud DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Redshift data warehouse is now populated. To run some queries there is a python script which will do this and save the results into the webapp for later visualisation. Run:
+The Redshift data warehouse is now populated. To run some queries I wrote a [python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ..
@@ -183,7 +183,7 @@ If all goes well you should now be able to run the web app and visualise the res
 
 ## How To Run the Web App
 
-First off you need to create a config.cfg file to hold your Mapbox token. If you don't have one you can obtain a [Mapbox](https://www.mapbox.com) token by creating a free account with them. Run:
+First off you need to create a config.cfg file to hold your Mapbox token. If you don't have one you can obtain a Mapbox token by creating a free account with them [here](https://www.mapbox.com). Run:
 
 ```
 $ cd visualisation_web_app
@@ -235,7 +235,7 @@ $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
 7. Use the nano editor to enter your Mapbox token. Then save and exit nano.
-8. Choose a domain name and replace all occurences of `talktin.com` with it in the following files:
+8. Choose a domain name and replace all occurences of `talktin.com` with your chosen domain in the following files:
 - `docker-compose-init-ssl.yml`
 - `nginx_init_ssl/app.conf`
 - `nginx_prod/app.conf`
@@ -250,7 +250,7 @@ $ docker-compose -f docker-compose-init-ssl.yml down
 ```
 $ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
 ```
-11. Run the production whole Flask/Gunicorn/Ngnix stack:
+11. Run the whole production Flask/Gunicorn/Ngnix stack:
 ```
 $ docker-compose -f docker-compose-prod.yml up -d --build
 ```
@@ -261,7 +261,7 @@ The web app should now be publically available at the domain of your choosing se
 
 There are numerous ways this project could be extended. 
 
-- So far the cloud based ETL pipeline has only been run with a month's worth of data to keep AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
+- So far the cloud based ETL pipeline has only been run with a month's worth of data to keep my AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
 - Make the postcode API calls part of the automated ETL pipeline and include it in the Airflow DAG.
 - Add more types of visualisation to the web app (like a bar chart).
 - Add the ability to select specific regions and time scales to display in the web app.
