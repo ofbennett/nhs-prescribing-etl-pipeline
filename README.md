@@ -138,9 +138,9 @@ $ python query_db_local.py
 
 If all goes well you should now be able to run the web app and visualise the results of the queries you just ran!
 
-### How to run the ETL pipeline in the cloud (AWS)
+### How to run the ETL pipeline on the cloud (AWS)
 
-**Running this pipeline on AWS will cost money**
+**NB: Running this pipeline on AWS will cost money**
 
 This version of the pipeline runs ETL on AWS and sets up a data warehouse in a Redshift database. You will need access to an AWS account and carry out a bit of setup. You will need to:
 - spin up a Redshift cluster
@@ -156,7 +156,7 @@ You need to create a config.cfg file from the template provided to locally conta
 ```
 $ cp config_template.cfg config.cfg
 ```
-Open config.cfg with a text editor and enter your cluster details.
+Open `config.cfg` with a text editor and enter your cluster details.
 
 Next run:
 ```
@@ -213,5 +213,48 @@ $ python app.py
 This should start a flask server locally on port 8050. Open a web browser and visit `localhost:8050`. You should see the app up and running!
 
 ### How to deploy on a remote host using a production server
+
+1. Spin up an Linux instance using a cloud provider like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/).
+2. Get a domain name and direct it at the public IP of your Linux instance
+2. SSH into the instance
+3. Setup the firewall to only allow ssh, http, and https inbound traffic 
+```
+$ ufw status
+$ ufw delete allow ...
+$ ufw allow ...
+$ ufw status
+```
+4. Clone the repo
+```
+$ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
+```
+5. Create the config.cfg file
+```
+$ cd NHS_Prescribing_ETL_Pipeline
+$ cp config_template.cfg config.cfg
+$ nano config.cfg
+```
+6. Use the nano editor to enter your Mapbox token. Then save and exit nano.
+7. Choose a domain name and replace all occurences of `talktin.com` with it in the following files:
+- `docker-compose-init-ssl.yml`
+- `nginx_init_ssl/app.conf`
+- `nginx_prod/app.conf`
+8. Setup SSL/TSL with Let's Encrypt and certbot:
+```
+$ docker-compose -f docker-compose-init-ssl.yml up -d --build
+$ docker ps --all   # certbot/certbot should have exited with status 0
+$ ls   # a new ssl/ directory should be present with the SSL certificate and key
+$ docker-compose -f docker-compose-init-ssl.yml down
+```
+9. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
+```
+$ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
+```
+10. Run the production whole Flask/Gunicorn/Ngnix stack:
+```
+$ docker-compose -f docker-compose-prod.yml up -d --build
+```
+
+The web app should now be publically available at the domain of your choosing served securely over https!
 
 ## Next Steps
