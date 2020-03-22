@@ -72,7 +72,9 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 
 ## The Visualisation Web App
 
+<a href="www.talktin.com">
 <p align="center"><img src="./resources/map_viz.png" width="800"></p>
+</a>
 
 This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
@@ -82,7 +84,7 @@ In order to setup SSL/TSL and serve the app securely over https I setup a reason
 - Ran a simple Nginx server over http along with an installation of certbot (the official certbot docker image)
 - Ran the certbot server challenge to obtain an SSL certificant for the chosen domain name
 - Removed this simple server
-- Finally installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using these previously acquired SSL certificates
+- Finally installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using the previously acquired SSL certificate and key
 
 For details on how to run this process see below.
 
