@@ -146,9 +146,17 @@ This version of the pipeline runs ETL on AWS and sets up a data warehouse in a R
 - spin up a Redshift cluster
 - setup a data lake S3 bucket
 - setup a query dump S3 bucket
+
 Explaining how to do this is beyond the scope of this doc, but have a look [here](https://docs.aws.amazon.com/redshift/latest/gsg/rs-gsg-launch-sample-cluster.html) and [here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) if you need help.
 
 You will also need the aws [cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html). You will need to copy your aws credentials into the `.aws/credentials` file.
+
+You need to create a config.cfg file from the template provided to locally contain your Redshift cluster details. Make sure you are in the repo top directory and run:
+
+```
+$ cp config_template.cfg config.cfg
+```
+Open config.cfg with a text editor and enter your cluster details.
 
 Next run:
 ```
@@ -174,5 +182,36 @@ $ python query_db_cloud.py
 If all goes well you should now be able to run the web app and visualise the results of the queries you just ran!
 
 ## How To Run the Web App
+
+First off you need to create a config.cfg file to hold your Mapbox token. If you don't have one you can obtain a [Mapbox](https://www.mapbox.com) token by creating a free account with them. Run:
+
+```
+$ cd visualisation_web_app
+$ cp config_template.cfg config.cfg
+```
+Then open the config.cfg file with a text editor and enter your Mapbox token.
+
+For hosting the app you have two options:
+
+- You can host the web app locally using a simple Flask Server and view it in a browser.
+- You can deploy it on a remote Linux virtual machine using something like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/) and run a production grade server. This will make it available on the public internet.
+
+### How to host locally
+
+Create a new Python virtual environment. Make sure you are in the `visualisation_web_app` directory and then run:
+
+```
+$ conda deactivate
+$ conda create -n web_app python=3.7 pip
+$ source activate web_app
+$ pip install -r requirements.txt
+```
+Next run the app:
+```
+$ python app.py
+```
+This should start a flask server locally on port 8050. Open a web browser and visit `localhost:8050`. You should see the app up and running!
+
+### How to deploy on a remote host using a production server
 
 ## Next Steps
