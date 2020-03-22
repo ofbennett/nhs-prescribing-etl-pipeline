@@ -258,3 +258,17 @@ $ docker-compose -f docker-compose-prod.yml up -d --build
 The web app should now be publically available at the domain of your choosing served securely over https!
 
 ## Next Steps
+
+There are numerous ways this project could be extended. 
+
+- So far the cloud based ETL pipeline has only been run with a month's worth of data to keep AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
+- Make the postcode API calls part of the automated ETL pipeline and include it in the Airflow DAG.
+- Add more types of visualisation to the web app (like a bar chart).
+- Add the ability to select specific regions and time scales to display in the web app.
+- Deploy the Airflow/Postgres scheduler onto a cloud instance rather than running it locally.
+- Develop "Infrastructure as Code" for the tech stack used in the project. Could use [CloudFormation](https://aws.amazon.com/cloudformation/), [Terraform](https://www.terraform.io), or simple boto3 AWS SDK scripts.
+- Consider the addition of an EMR Spark cluster into the setup.
+- Draw in more data to enrich the data model. Perhaps data associated with the GP practice locations (local measures of disease burden, socioeconomic factors, local public health metrics, weather etc).
+- Build predictive models to try to understand the variance across geography and time of the observed trends.
+
+Please feel free to raise issues or contribute.
