@@ -1,2 +1,2 @@
-# Jupyter notebook
-*.ipynb  text
+# Ignore python notebooks in language detection
+*.ipynb  linguist-language=text
