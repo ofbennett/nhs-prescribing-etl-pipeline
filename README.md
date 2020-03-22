@@ -38,6 +38,8 @@ The prescribed medication in this dataset is referenced with a code used by the 
 
 Finally, a free and open source API called [Postcodes.io](https://postcodes.io) was used to obtain latitude and longitude coordinates (as well as other location metadata) of the GP practices in the dataset to make plotting them easier.
 
+Before building the ETL pipeline and the web app I carried out an early stage data exploration of all these datasets in a Jupyter notebook. I was able to better understand what each contained and learned about their specific quirks. The exploration is documented in this [notebook](./resources/explore_data.ipynb).
+
 ## The Data Warehouse Schema
 
 The schema used in the data warehouse is demonstrated in this diagram:
@@ -72,7 +74,7 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 
 ## The Visualisation Web App
 
-<a href="www.talktin.com">
+<a href="https://www.talktin.com">
 <p align="center"><img src="./resources/map_viz.png" width="800"></p>
 </a>
 
@@ -90,15 +92,86 @@ For details on how to run this process see below.
 
 ## How To Run the ETL Pipeline
 
-There are two ways to run the ETL pipeline. You can either run it on your local machine using a modest subsample of the dataset, or you can run the full cloud-base ETL pipeline using any data sample size up to the full dataset. **NB Running the ETL pipeline on the cloud will cost you money!**
+If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Next create a suitable python virtual environment.
+
+```
+$ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
+$ cd NHS_Prescribing_ETL_Pipeline
+$ conda create -n etl_pipeline python=3.7 pip
+$ source activate etl_pipeline
+$ pip install -r requirements.txt
+```
+
+You need to get the data first before running the pipeline. You can download all the data from the locations specified above. Here is a summary:
+
+- [Prescription data and GP Practice info](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data)
+- [BNF info](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)
+
+Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the API provided by [Postcodes.io](https://postcodes.io). A python script is provided which does this. Make sure the file names and paths at the top are correct and run it:
+
+```
+$ python postcode_api.py
+```
+
+The results will be saved as a JSON file and a smaller CSV file in the same directory as the script. You now have all the necessary data.
+
+There are two ways to run the ETL pipeline. You can either run it on your local machine using a modestly sized sample of the dataset, or you can run the full cloud-base ETL pipeline using any data sample size you like. **NB Running the ETL pipeline on the cloud will cost you money!**
 
 ### How to run the ETL pipeline locally
 
-This version of the pipeline runs ETL locally and sets up a data warehouse in a local installation of Postgres (instead of Redshift). 
+This version of the pipeline runs ETL locally and sets up a data warehouse in a local installation of Postgres (instead of Redshift). Run:
+
+```
+$ cd airflow
+$ docker-compose -f airflow_local_docker_compose.yml up -d --build
+```
+This will start docker containers with airflow backed by a postgres database along another postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./resources/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
+
+Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages. Select the etl_dag_local DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
+
+The Postgres data warehouse is now populated. To run some queries there is a python script which will do this and save the results into the webapp for later visualisation. Run:
+
+```
+$ cd ..
+$ python query_db_local.py
+```
+
+If all goes well you should now be able to run the web app and visualise the results of the queries you just ran!
 
 ### How to run the ETL pipeline in the cloud (AWS)
 
+**Running this pipeline on AWS will cost money**
 
+This version of the pipeline runs ETL on AWS and sets up a data warehouse in a Redshift database. You will need access to an AWS account and carry out a bit of setup. You will need to:
+- spin up a Redshift cluster
+- setup a data lake S3 bucket
+- setup a query dump S3 bucket
+Explaining how to do this is beyond the scope of this doc, but have a look [here](https://docs.aws.amazon.com/redshift/latest/gsg/rs-gsg-launch-sample-cluster.html) and [here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) if you need help.
+
+You will also need the aws [cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html). You will need to copy your aws credentials into the `.aws/credentials` file.
+
+Next run:
+```
+$ cd airflow
+$ docker-compose -f airflow_cloud_docker_compose.yml up -d --build
+```
+This will start docker containers with Airflow backed by a Postgres database running and linked together in a private network. Next you need to copy the data to the S3 data lake. This can be done using the `aws s3 cp` command. An [example script](./resources/copy_data_to_data_lake.sh) is provided which can be adapted to carry this out easily.
+
+Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. You will now need to create two custom airflow connections:
+
+- my_aws_conn: connection type AWS. Populate with AWS credentials
+- my_redshift_conn: connection type Postgres. Populate with your Redshift cluster information.
+
+Next, select the etl_dag_cloud DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
+
+The Redshift data warehouse is now populated. To run some queries there is a python script which will do this and save the results into the webapp for later visualisation. Run:
+
+```
+$ cd ..
+$ python query_db_cloud.py
+```
+
+If all goes well you should now be able to run the web app and visualise the results of the queries you just ran!
 
 ## How To Run the Web App
 
