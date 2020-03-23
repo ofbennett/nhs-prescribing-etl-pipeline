@@ -3,7 +3,7 @@
 ## Overview
 This is a cloud based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.talktin.com)). The goals are:
 - To demonstrate patterns of prescribing across all the GP practices in England
-- To provide a way to populate a cloud-based data warehouse in order to make it convenient to run any query against this data
+- To provide a way to populate a cloud-based data warehouse in order to make it convenient to run any query against the dataset
 - Demontrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related Big Data
 
 ## The Architecture
@@ -13,6 +13,12 @@ This is a cloud based ETL data pipeline which feeds into a web app visualisation
 The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.talktin.com). Throughout I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
 As shown, the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+
+S3 is a great choice for a large data lake since it will automatically scale to meet any storage need, it's cheap to store and read data, and it's programatically accessible via the AWS SDK and Airflow hooks.
+
+Redshift is well suited for this purpose since it can scale to meet different storage and query loads very easily. Under the hood Redshift is actually a cluster of nodes and so is designed to run analytical queries very efficiently across multiple nodes simultaneously.
+
+Airflow is a great fit for this type of project as well. It makes scheduling tasks very simple, and can manage dependancies between different tasks in an arbitrarily complex [Directed Acyclic Graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG). This allows multiple parts of your pipeline to run simultaneously in a carefully coordinated way and allows precise monitoring of the pipeline across multiple runs. The Airflow UI makes visualisation of your pipelines very simple and elegant as well.
 
 ## The Data Sources
 
