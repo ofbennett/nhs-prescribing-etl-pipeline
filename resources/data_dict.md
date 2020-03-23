@@ -11,7 +11,7 @@ A fact table containing the details of the amount and location of all the GP pre
 | items | The number of individual 'units' of this type of prescription dispensed |
 | nic | The net ingredient cost of the prescriptions to the NHS |
 | act_cost | The actual cost of the prescriptions to the NHS taking into account certain extra costs and discounts |
-| quantity | The quantity prescribed (in tables, or millilitres for example) |
+| quantity | The quantity prescribed (in tablets, or millilitres for example) |
 | month | The month the prescription amounts are aggregated within |
 | year | The year that the month is within |
 
