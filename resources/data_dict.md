@@ -11,12 +11,12 @@ A fact table containing the details of the amount and location of all the GP pre
 | items | The number of individual 'units' of this type of prescription dispensed |
 | nic | The net ingredient cost of the prescriptions to the NHS |
 | act_cost | The actual cost of the prescriptions to the NHS taking into account certain extra costs and discounts |
-| quantity | The quantity prescribed (in tables, or milliliters for example) |
+| quantity | The quantity prescribed (in tables, or millilitres for example) |
 | month | The month the prescription amounts are aggregated within |
 | year | The year that the month is within |
 
 ## gp_pracs_dim_table
-A dimention table providing information about each GP practice in the prescription dataset. Includes location information obtained from the https://postcodes.io API.
+A dimension table providing information about each GP practice in the prescription dataset. Includes location information obtained from the https://postcodes.io API.
 
 | Column | Description |
 |--------|-------------|
@@ -29,7 +29,7 @@ A dimention table providing information about each GP practice in the prescripti
 | latitude | The latitude of the practice |
 
 ## bnf_info_dim_table
-A dimention table providing information about the nature of each medication from the ontology provided by the British National Formulary.
+A dimension table providing information about the nature of each medication from the ontology provided by the British National Formulary.
 
 | Column | Description |
 |--------|-------------|
