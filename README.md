@@ -1,7 +1,7 @@
 # Medical Prescribing Patterns Across NHS GP Practices
 
 ## Overview
-This is a cloud based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.talktin.com)). The goals are:
+This is a cloud-based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.talktin.com)). The goals are:
 - To demonstrate patterns of prescribing across all the GP practices in England
 - To provide a way to populate a cloud-based data warehouse in order to make it convenient to run any query against the dataset
 - Demonstrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related Big Data
@@ -10,7 +10,7 @@ This is a cloud based ETL data pipeline which feeds into a web app visualisation
 
 <p align="center"><img src="./resources/architecture.png" width="850"></p>
 
-The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.talktin.com). Throughout I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
+The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.talktin.com). Throughout, I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
 As shown, the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
@@ -22,7 +22,7 @@ Airflow is a great fit for this type of project as well. It makes scheduling tas
 
 ## The Data Sources
 
-The majority of the data comes from a large volume (~100GB) of anonymised GP prescription records which have been released publicly by [NHS digital](https://digital.nhs.uk) over the course of the last 10 years. The data can be downloaded from their website [here](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data) and a detailed description of what the data contains can be found [here](https://digital.nhs.uk/data-and-information/areas-of-interest/prescribing/practice-level-prescribing-in-england-a-summary/practice-level-prescribing-data-more-information). This public sector information is published and made available under the [Open Government Licence v3.0](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). Prescription data from each month consists over a little over 9 million rows.
+The majority of the data comes from a large volume (~100GB) of anonymised GP prescription records which have been released publicly by [NHS digital](https://digital.nhs.uk) over the course of the last 10 years. The data can be downloaded from their website [here](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data) and a detailed description of what the data contains can be found [here](https://digital.nhs.uk/data-and-information/areas-of-interest/prescribing/practice-level-prescribing-in-england-a-summary/practice-level-prescribing-data-more-information). This public sector information is published and made available under the [Open Government Licence v3.0](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). Prescription data is released once a month and each monthly release consists of a CSV file containing a little over 9 million rows.
 
 The prescribed medication in this dataset is referenced with a code used by the British National Formulary (BNF). An extra dataset (~19MB) providing more information and categorisation of each of these medications from the BNF was downloaded from the NHS Business Services Authority website ([here](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)).
 
@@ -84,7 +84,7 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 <p align="center"><img src="./resources/map_viz.png" width="800"></p>
 </a>
 
-I order to more easily see the results of running interesting queries against the newly populated Redshift warehouse a web app was built and deployed. This shows a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
+In order to more easily see the results of running interesting queries against the newly populated Redshift warehouse a web app was built and deployed. This shows a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
 This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.talktin.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers built and run with docker-compose.
 
@@ -98,7 +98,7 @@ I've included details on how to run this process below.
 
 ## How To Run the ETL Pipeline
 
-If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Then create a suitable python virtual environment.
+If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Then create a suitable Python virtual environment.
 
 ```
 $ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
@@ -131,11 +131,11 @@ This version of the pipeline runs ETL on your local machine and sets up a data w
 $ cd airflow
 $ docker-compose -f airflow_local_docker_compose.yml up -d --build
 ```
-This will start docker containers with airflow backed by a postgres database along another postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./resources/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
+This will start docker containers with airflow backed by a Postgres database along another Postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./resources/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages - they simply mean you haven't setup the cloud based ETL in this case. Select the `etl_dag_local` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Postgres data warehouse is now populated. To run some queries I wrote a [python script](./query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
+The Postgres data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ..
@@ -155,7 +155,7 @@ This version of the pipeline runs ETL on AWS and sets up a data warehouse in a R
 
 Explaining how to do this is beyond the scope of this doc, but have a look [here](https://docs.aws.amazon.com/redshift/latest/gsg/rs-gsg-launch-sample-cluster.html) and [here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html) if you need help.
 
-You will also need the [aws cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and to copy your aws credentials into your `.aws/credentials` file.
+You will also need the [aws cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and to copy your AWS credentials into your `.aws/credentials` file.
 
 You need to create a config.cfg file from the template provided to locally contain your Redshift cluster details. Make sure you are in the repo's top directory and run:
 
@@ -178,7 +178,7 @@ Open a browser and go to `localhost:8080`. This should bring up the Airflow UI w
 
 Next, select the `etl_dag_cloud` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Redshift data warehouse is now populated. To run some queries I wrote a [python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
+The Redshift data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ..
@@ -220,7 +220,7 @@ This should start a flask server locally on port 8050. Open a web browser and vi
 
 ### How to deploy on a remote host using a production server
 
-1. Spin up an Linux instance using a cloud provider like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/).
+1. Spin up a Linux instance using a cloud provider like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/).
 2. Get a domain name and direct it at the public IP of your Linux instance
 3. SSH into the instance
 4. Create a non-root user with sudo access
@@ -276,7 +276,7 @@ There are numerous ways this project could be extended.
 - Deploy the Airflow/Postgres scheduler onto a cloud instance rather than running it locally.
 - Develop "Infrastructure as Code" for the tech stack used in the project. Could use [CloudFormation](https://aws.amazon.com/cloudformation/), [Terraform](https://www.terraform.io), or simple boto3 AWS SDK scripts.
 - Consider the addition of an EMR Spark cluster into the setup.
-- Draw in more data to enrich the data model. Perhaps data associated with the GP practice locations (local measures of disease burden, socioeconomic factors, local public health metrics, weather etc).
+- Draw in more data to enrich the data model. Perhaps data associated with the GP practice locations (local measures of disease burden, socioeconomic factors, local public health metrics, weather, etc).
 - Build predictive models to try to understand the variance across geography and time of the observed trends.
 - Feel free to suggest more!
 
