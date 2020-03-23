@@ -38,11 +38,11 @@ Before building the ETL pipeline and the web app I carried out an early stage da
 - These API responses are converted into a CSV file and uploaded to the data lake
 - **Data from the data lake is copied into AWS Redshift staging tables**
 - **Data from these staging tables are transformed and loaded into a data warehouse table schema (see below)**
-- **Automated data quality checks are run to ensure the integrity of the resulting data**
-- A local Python script runs a series of queries against the data warehouse and saves the results as CSV files in an S3 bucket and locally
+- **Automated data quality checks are run to ensure the pipeline ran correctly**
+- A local Python script runs a series of queries against the data warehouse and saves the results as CSV files in an S3 bucket and then also locally
 - These results are sent to the web app which generates a visualisation
 
-Apache Airflow is used to schedule and orchestrate the steps in **bold**. The dependancy DAG is illustrated here:
+Apache Airflow is used to schedule and orchestrate the steps in **bold**. The Airflow dependancy DAG is illustrated here:
 
 <p align="center"><img src="./resources/airflow.png" width="900"></p>
 
@@ -68,7 +68,7 @@ Depending on the types of queries expected to be run, it may be possible to stor
 
 The Redshift cluster would likely need to scale out with more nodes. The distribution of data across these nodes would need to be carefully thought about to improve the efficiency of expected queries. Using DISTKEYs and SORTKEYs it should be possible to limit the amount of internode network communication necessary to run analytics. 
 
-The E and T steps of the ETL pipeline could be taken over by an AWS EMR cluster running Apache Spark. This type of approach would take advantage of the massive parallelism achievable with a Spark cluster to speed up the whole pipeline. This would be especially helpful if aggregations needed to be computed as part of the adapted ETL pipeline.
+The E and T steps of the ETL pipeline could be taken over by an AWS EMR cluster running [Apache Spark](https://spark.apache.org). This type of approach would take advantage of the massive parallelism achievable with a Spark cluster to speed up the whole pipeline. This would be especially helpful if aggregations needed to be computed as part of the adapted ETL pipeline.
 
 - **Pipeline needs to be run every morning at 7am**
 
@@ -84,9 +84,9 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 <p align="center"><img src="./resources/map_viz.png" width="800"></p>
 </a>
 
-This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
+I order to more easily see the results of running interesting queries against the newly populated Redshift warehouse a web app was built and deployed. This shows a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
-This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.talktin.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers build and run with docker-compose.
+This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.talktin.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers built and run with docker-compose.
 
 In order to enable SSL/TSL and serve the app securely over https I setup a reasonably simple two step deployment process using [Let's Encrypt](https://letsencrypt.org) as a certificate authority. This process proceeded like this:
 - Ran a simple Nginx server over http along with an installation of certbot (the official certbot docker image)
@@ -94,7 +94,7 @@ In order to enable SSL/TSL and serve the app securely over https I setup a reaso
 - Removed this simple server
 - Installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using the previously acquired SSL certificate and key
 
-For details on how to run this process see below.
+I've included details on how to run this process below.
 
 ## How To Run the ETL Pipeline
 
@@ -113,7 +113,7 @@ You need to get the data first before running the pipeline. You can download all
 - [Prescription data and GP Practice info](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data)
 - [BNF info](https://apps.nhsbsa.nhs.uk/infosystems/data/showDataSelector.do?reportId=126)
 
-Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the free API provided by [Postcodes.io](https://postcodes.io). I wrote a Python script which does this. Make sure the file names and paths at the top of this script are correct and run it:
+Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the free API provided by [Postcodes.io](https://postcodes.io). I wrote a Python script which does this. Make sure the file names and paths at the top of this script are correct for your local setup and run it:
 
 ```
 $ python postcode_api.py
@@ -121,7 +121,7 @@ $ python postcode_api.py
 
 The results will be saved as a JSON file and a smaller CSV file in the same directory as the script. You now have all the necessary data.
 
-There are two ways to run the ETL pipeline. You can either run it on your local machine using a modestly sized sample of the dataset, or you can run the full cloud-base ETL pipeline using any data sample size you like. **NB Running the ETL pipeline on the cloud will cost you money!**
+There are two ways to run the ETL pipeline. You can either run it on your local machine using a modestly sized sample of the dataset, or you can run the full cloud-base ETL pipeline using any data sample size you like. **NB: Running the ETL pipeline on the cloud will cost you money!**
 
 ### How to run the ETL pipeline locally
 
@@ -133,9 +133,9 @@ $ docker-compose -f airflow_local_docker_compose.yml up -d --build
 ```
 This will start docker containers with airflow backed by a postgres database along another postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./resources/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
 
-Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages. Select the etl_dag_local DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
+Open a browser and go to `localhost:8080`. This should bring up the Airflow UI. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages - they simply mean you haven't setup the cloud based ETL in this case. Select the `etl_dag_local` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Postgres data warehouse is now populated. To run some queries I wrote a [python script](./query_db_local.py) which will do this and save the results into the webapp for later visualisation. Run:
+The Postgres data warehouse is now populated. To run some queries I wrote a [python script](./query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ..
@@ -157,7 +157,7 @@ Explaining how to do this is beyond the scope of this doc, but have a look [here
 
 You will also need the [aws cli installed](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and to copy your aws credentials into your `.aws/credentials` file.
 
-You need to create a config.cfg file from the template provided to locally contain your Redshift cluster details. Make sure you are in the repo top directory and run:
+You need to create a config.cfg file from the template provided to locally contain your Redshift cluster details. Make sure you are in the repo's top directory and run:
 
 ```
 $ cp config_template.cfg config.cfg
@@ -173,10 +173,10 @@ This will start docker containers with Airflow backed by a Postgres database run
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. You will now need to create two custom airflow connections:
 
-- my_aws_conn: connection type AWS. Populate with AWS credentials
+- my_aws_conn: connection type AWS. Populate with AWS credentials.
 - my_redshift_conn: connection type Postgres. Populate with your Redshift cluster information.
 
-Next, select the etl_dag_cloud DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
+Next, select the `etl_dag_cloud` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
 The Redshift data warehouse is now populated. To run some queries I wrote a [python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
 
@@ -223,6 +223,7 @@ This should start a flask server locally on port 8050. Open a web browser and vi
 1. Spin up an Linux instance using a cloud provider like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/).
 2. Get a domain name and direct it at the public IP of your Linux instance
 3. SSH into the instance
+4. Create a non-root user with sudo access
 4. Setup the firewall to only allow ssh, http, and https inbound traffic 
 ```
 $ ufw status
