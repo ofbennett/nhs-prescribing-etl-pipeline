@@ -4,7 +4,7 @@
 This is a cloud based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.talktin.com)). The goals are:
 - To demonstrate patterns of prescribing across all the GP practices in England
 - To provide a way to populate a cloud-based data warehouse in order to make it convenient to run any query against the dataset
-- Demontrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related Big Data
+- Demonstrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related Big Data
 
 ## The Architecture
 
@@ -12,13 +12,13 @@ This is a cloud based ETL data pipeline which feeds into a web app visualisation
 
 The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.talktin.com). Throughout I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
-As shown, the data is trasformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+As shown, the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
-S3 is a great choice for a large data lake since it will automatically scale to meet any storage need, it's cheap to store and read data, and it's programatically accessible via the AWS SDK and Airflow hooks.
+S3 is a great choice for a large data lake since it will automatically scale to meet any storage need, it's cheap to store and read data, and it's programmatically accessible via the AWS SDK and Airflow hooks.
 
 Redshift is well suited for this purpose since it can scale to meet different storage and query loads very easily. Under the hood Redshift is actually a cluster of nodes and so is designed to run analytical queries very efficiently across multiple nodes simultaneously.
 
-Airflow is a great fit for this type of project as well. It makes scheduling tasks very simple, and can manage dependancies between different tasks in an arbitrarily complex [Directed Acyclic Graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG). This allows multiple parts of your pipeline to run simultaneously in a carefully coordinated way and allows precise monitoring of the pipeline across multiple runs. The Airflow UI makes visualisation of your pipelines very simple and elegant as well.
+Airflow is a great fit for this type of project as well. It makes scheduling tasks very simple, and can manage dependencies between different tasks in an arbitrarily complex [Directed Acyclic Graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG). This allows multiple parts of your pipeline to run simultaneously in a carefully coordinated way and allows precise monitoring of the pipeline across multiple runs. The Airflow UI makes visualisation of your pipelines very simple and elegant as well.
 
 ## The Data Sources
 
@@ -32,7 +32,7 @@ Before building the ETL pipeline and the web app I carried out an early stage da
 
 ## The ETL Pipeline
 
-- CSV files from NHS digital and the BNF are downloaded and transfered to the AWS S3 data lake
+- CSV files from NHS digital and the BNF are downloaded and transferred to the AWS S3 data lake
 - CSV file from NHS digital containing GP practice details downloaded locally
 - A Python script obtains location metadata for each GP practice via an API (https://postcodes.io)
 - These API responses are converted into a CSV file and uploaded to the data lake
@@ -56,7 +56,7 @@ More information about the meaning of these table columns can be found in the [d
 
 ## Data Quality Checks
 
-Data quality checks are carried out by a custom airflow operator. They carry out a series of basic checks to ensure that the pipeline ran correctly. For example, there are checks to ensure rows are present in the fact and dimention tables and that certain columns do not contain any null values. 
+Data quality checks are carried out by a custom airflow operator. They carry out a series of basic checks to ensure that the pipeline ran correctly. For example, there are checks to ensure rows are present in the fact and dimension tables and that certain columns do not contain any null values. 
 
 ## Alternative Data Scenarios
 
@@ -90,7 +90,7 @@ This web app was built using Flask, Plotly Dash and Mapbox and is currently host
 
 In order to enable SSL/TSL and serve the app securely over https I setup a reasonably simple two step deployment process using [Let's Encrypt](https://letsencrypt.org) as a certificate authority. This process proceeded like this:
 - Ran a simple Nginx server over http along with an installation of certbot (the official certbot docker image)
-- Ran the certbot server challenge to obtain an SSL certificant for the chosen domain name
+- Ran the certbot server challenge to obtain an SSL certificate for the chosen domain name
 - Removed this simple server
 - Installed and ran the whole app/gunicorn/nginx stack and ran this new server setup using the previously acquired SSL certificate and key
 
@@ -224,40 +224,40 @@ This should start a flask server locally on port 8050. Open a web browser and vi
 2. Get a domain name and direct it at the public IP of your Linux instance
 3. SSH into the instance
 4. Create a non-root user with sudo access
-4. Setup the firewall to only allow ssh, http, and https inbound traffic 
+5. Setup the firewall to only allow ssh, http, and https inbound traffic 
 ```
 $ ufw status
 $ ufw delete allow ...
 $ ufw allow ...
 $ ufw status
 ```
-5. Clone the repo
+6. Clone the repo
 ```
 $ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
 ```
-6. Create the config.cfg file
+7. Create the config.cfg file
 ```
 $ cd NHS_Prescribing_ETL_Pipeline
 $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
-7. Use the nano editor to enter your Mapbox token. Then save and exit nano.
-8. Choose a domain name and replace all occurences of `talktin.com` with your chosen domain in the following files:
+8. Use the nano editor to enter your Mapbox token. Then save and exit nano.
+9. Choose a domain name and replace all occurrences of `talktin.com` with your chosen domain in the following files:
 - `docker-compose-init-ssl.yml`
 - `nginx_init_ssl/app.conf`
 - `nginx_prod/app.conf`
-9. Setup SSL/TSL with Let's Encrypt and certbot:
+10. Setup SSL/TSL with Let's Encrypt and certbot:
 ```
 $ docker-compose -f docker-compose-init-ssl.yml up -d --build
 $ docker ps --all   # certbot/certbot should have exited with status 0
 $ ls   # a new ssl/ directory should be present with the SSL certificate and key
 $ docker-compose -f docker-compose-init-ssl.yml down
 ```
-10. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
+11. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
 ```
 $ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
 ```
-11. Run the whole production Flask/Gunicorn/Ngnix stack:
+12. Run the whole production Flask/Gunicorn/Ngnix stack:
 ```
 $ docker-compose -f docker-compose-prod.yml up -d --build
 ```
