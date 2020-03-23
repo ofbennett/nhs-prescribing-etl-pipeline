@@ -246,18 +246,19 @@ $ nano config.cfg
 - `docker-compose-init-ssl.yml`
 - `nginx_init_ssl/app.conf`
 - `nginx_prod/app.conf`
-10. Setup SSL/TSL with Let's Encrypt and certbot:
+10. Replace `example@email.com` in `docker-compose-init-ssl.yml` with your email address
+11. Setup SSL/TSL with Let's Encrypt and certbot:
 ```
 $ docker-compose -f docker-compose-init-ssl.yml up -d --build
 $ docker ps --all   # certbot/certbot should have exited with status 0
 $ ls   # a new ssl/ directory should be present with the SSL certificate and key
 $ docker-compose -f docker-compose-init-ssl.yml down
 ```
-11. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
+12. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
 ```
 $ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
 ```
-12. Run the whole production Flask/Gunicorn/Ngnix stack:
+13. Run the whole production Flask/Gunicorn/Ngnix stack:
 ```
 $ docker-compose -f docker-compose-prod.yml up -d --build
 ```
