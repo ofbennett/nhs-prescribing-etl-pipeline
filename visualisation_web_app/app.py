@@ -10,6 +10,8 @@ data_dir = './data_cloud/'
 # data_dir = './data_local/'
 data_path = data_dir+'0datafile.csv'
 
+num_of_bars = 30
+
 colors = {
     'background': 'WhiteSmoke',
     'text': 'black'
@@ -18,6 +20,7 @@ colors = {
 app = dash.Dash(__name__)
 
 df = pd.read_csv(data_path)
+df['name'] = df['name'].map(lambda x: x.title())
 
 config = configparser.ConfigParser()
 config.read('./config.cfg')
@@ -40,7 +43,7 @@ fig.update_layout(autosize=True,
                 height=640,
                 paper_bgcolor=colors['background'],
                 plot_bgcolor=colors['background'],
-                margin=dict(l=100, r=100, t=35, b=30))
+                margin=dict(l=150, r=150, t=35, b=0))
 
 dropdown = dcc.Dropdown(
     id = 'dropdown',
@@ -76,6 +79,25 @@ graph = html.Div(children=[
                 style = {'backgroundColor':colors['background'],'width': '25%', 'margin-left': 30}),
                 dcc.Graph(figure=fig, id = 'map')], 
                 style={'backgroundColor':colors['background']})
+
+df_sorted = df.sort_values(by=['total_cost'], ascending=False)
+barchart = dcc.Graph(
+        id='bar-chart',
+        figure={
+            'data': [
+                {'x': df_sorted['name'][:num_of_bars], 'y': df_sorted['total_cost'][:num_of_bars], 'type': 'bar', 'name': 'SF'},
+            ],
+            'layout': {
+                'plot_bgcolor': colors['background'],
+                'paper_bgcolor': colors['background'],
+                'margin': dict(l=150, r=150, t=0, b=0),
+                'font': {
+                    'color':colors['text']
+                }
+            }
+        }
+    )
+
 
 mdtext1 = dcc.Markdown(
 """
@@ -124,13 +146,13 @@ I'm Oscar. I like learning things from data. I'm a data scientist and software e
 style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10}
 )
 
-app.layout = html.Div([graph, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
+app.layout = html.Div([graph, barchart, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 
 @app.callback(
-    Output('map','figure'),
+    [Output('map','figure'), Output('bar-chart','figure')],
     [Input('dropdown', 'value')]
 )
-def update_map(selected_med):
+def update_charts(selected_med):
 
     med_dict = {'All':0,
                 'Antibacterial Drugs':1,
@@ -138,13 +160,15 @@ def update_map(selected_med):
                 'Diuretics':3,
                 'Beta-Adrenoceptor Blocking Drugs':4,
                 'Bronchodilators':5}
-
+    label_list = ['All', 'Antibiotics', 'Antiprotozoal Drugs', 'Diuretics', 'Beta Blockers', 'Bronchodilators']
     med_num = med_dict[selected_med]
+    selected_med_label = label_list[med_num]
     data_path = data_dir + '{}datafile.csv'.format(med_num)
     df = pd.read_csv(data_path)
+    df['name'] = df['name'].map(lambda x: x.title())
     max_val = df['total_cost'].max()
 
-    fig = px.scatter_mapbox(df, 
+    fig_map = px.scatter_mapbox(df, 
                         lat="latitude", 
                         lon="longitude", 
                         color="total_cost", 
@@ -157,13 +181,28 @@ def update_map(selected_med):
                         zoom=5.5,
                         mapbox_style='dark')
 
-    fig.update_layout(autosize=True,
+    fig_map.update_layout(autosize=True,
                     height=640,
                     paper_bgcolor=colors['background'],
                     plot_bgcolor=colors['background'],
-                    margin=dict(l=100, r=100, t=35, b=30),
+                    margin=dict(l=150, r=150, t=35, b=10),
                     )
-    return fig
+    df_sorted = df.sort_values(by=['total_cost'], ascending=False)
+    fig_barchart={
+            'data': [
+                {'x': df_sorted['name'][:num_of_bars], 'y': df_sorted['total_cost'][:num_of_bars], 'type': 'bar', 'name': 'SF'},
+            ],
+            'layout': {
+                'title': 'Top {} practices when looking at {} prescribing (only within Nov 2019 at present)'.format(num_of_bars,selected_med_label.lower()),
+                'plot_bgcolor': colors['background'],
+                'paper_bgcolor': colors['background'],
+                'margin': dict(l=150, r=150, t=50, b=150),
+                'font': {
+                    'color':colors['text']
+                }
+            }
+        }
+    return fig_map, fig_barchart
 
 server = app.server # for gunicorn to import 
 if __name__ == '__main__':
