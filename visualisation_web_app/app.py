@@ -26,7 +26,7 @@ config = configparser.ConfigParser()
 config.read('./config.cfg')
 px.set_mapbox_access_token(config['MAPBOX']['MAPBOX_TOKEN'])
 
-fig = px.scatter_mapbox(df, 
+fig = px.scatter_mapbox(df,
                         lat="latitude", 
                         lon="longitude", 
                         color="total_cost", 
@@ -43,7 +43,7 @@ fig.update_layout(autosize=True,
                 height=640,
                 paper_bgcolor=colors['background'],
                 plot_bgcolor=colors['background'],
-                margin=dict(l=150, r=150, t=35, b=0))
+                margin=dict(l=150, r=150, t=25, b=0))
 
 dropdown = dcc.Dropdown(
     id = 'dropdown',
@@ -77,6 +77,11 @@ graph = html.Div(children=[
                         'margin-right':40}),
                 html.Div(["Select the type of medication to display:",dropdown],
                 style = {'backgroundColor':colors['background'],'width': '25%', 'margin-left': 30}),
+                html.Div(children="Display of Total Spent per Practice on All Prescribing", id = 'map-title', 
+                    style={'textAlign':'center', 
+                        'color':colors['text'],
+                        'margin-top': 10,
+                        'font-size': '20px'}),
                 dcc.Graph(figure=fig, id = 'map')], 
                 style={'backgroundColor':colors['background']})
 
@@ -149,7 +154,7 @@ style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlig
 app.layout = html.Div([graph, barchart, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 
 @app.callback(
-    [Output('map','figure'), Output('bar-chart','figure')],
+    [Output('map','figure'), Output('bar-chart','figure'), Output('map-title','children')],
     [Input('dropdown', 'value')]
 )
 def update_charts(selected_med):
@@ -168,7 +173,7 @@ def update_charts(selected_med):
     df['name'] = df['name'].map(lambda x: x.title())
     max_val = df['total_cost'].max()
 
-    fig_map = px.scatter_mapbox(df, 
+    fig_map = px.scatter_mapbox(df,
                         lat="latitude", 
                         lon="longitude", 
                         color="total_cost", 
@@ -185,7 +190,7 @@ def update_charts(selected_med):
                     height=640,
                     paper_bgcolor=colors['background'],
                     plot_bgcolor=colors['background'],
-                    margin=dict(l=150, r=150, t=35, b=10),
+                    margin=dict(l=150, r=150, t=25, b=10),
                     )
     df_sorted = df.sort_values(by=['total_cost'], ascending=False)
     fig_barchart={
@@ -202,8 +207,10 @@ def update_charts(selected_med):
                 }
             }
         }
-    return fig_map, fig_barchart
+
+    map_title = "Display of Total Spent per Practice on {} Prescribing".format(selected_med_label)
+    return fig_map, fig_barchart, map_title
 
 server = app.server # for gunicorn to import 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
