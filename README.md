@@ -1,7 +1,7 @@
 # Medical Prescribing Patterns Across NHS GP Practices
 
 ## Overview
-This is a cloud-based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.talktin.com)). The goals are:
+This is a cloud-based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.ofbennett.com)). The goals are:
 - To demonstrate patterns of prescribing across all the GP practices in England
 - To provide a way to populate a cloud-based data warehouse in order to make it convenient to run any query against the dataset
 - Demonstrate how the use of modern data engineering tools and cloud based architecture makes it possible to do interesting things with health-related Big Data
@@ -10,7 +10,7 @@ This is a cloud-based ETL data pipeline which feeds into a web app visualisation
 
 <p align="center"><img src="./resources/architecture.png" width="850"></p>
 
-The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.talktin.com). Throughout, I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
+The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.ofbennett.com). Throughout, I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
 As shown, the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
@@ -80,13 +80,13 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 
 ## The Visualisation Web App
 
-<a href="https://www.talktin.com">
+<a href="https://www.ofbennett.com">
 <p align="center"><img src="./resources/map_viz.png" width="900"></p>
 </a>
 
 In order to more easily see the results of running interesting queries against the newly populated Redshift warehouse a web app was built and deployed. This shows a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
-This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.talktin.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers built and run with docker-compose.
+This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on a DigitalOcean instance [here](https://www.ofbennett.com). A Gunicorn production server behind a Nginx reverse proxy was used to serve the app. The whole setup exists in two docker containers built and run with docker-compose.
 
 In order to enable SSL/TSL and serve the app securely over https I setup a reasonably simple two step deployment process using [Let's Encrypt](https://letsencrypt.org) as a certificate authority. This process proceeded like this:
 - Ran a simple Nginx server over http along with an installation of certbot (the official certbot docker image)
@@ -244,7 +244,7 @@ $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
 8. Use the nano editor to enter your Mapbox token. Then save and exit nano.
-9. Choose a domain name and replace all occurrences of `talktin.com` with your chosen domain in the following files:
+9. Choose a domain name and replace all occurrences of `ofbennett.com` with your chosen domain in the following files:
 - `docker-compose-init-ssl.yml`
 - `nginx_init_ssl/app.conf`
 - `nginx_prod/app.conf`
