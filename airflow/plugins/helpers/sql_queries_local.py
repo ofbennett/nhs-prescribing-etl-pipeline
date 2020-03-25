@@ -112,7 +112,7 @@ CSV HEADER;
 
 gp_prac_staging_table_populate = ("""
 COPY gp_pracs_staging_table(time_period, gp_prac_id, addr1, addr2, addr3, addr4, addr5, postcode)
-FROM '/home/T201912ADDR_BNFT.csv'
+FROM '/home/T201911ADDR_BNFT.csv'
 DELIMITER ',';
 """)
 

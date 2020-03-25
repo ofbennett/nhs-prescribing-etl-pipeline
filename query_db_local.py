@@ -1,6 +1,7 @@
 import psycopg2
 import pandas as pd
 import configparser
+import os
 
 meds = ['All','Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
 
@@ -42,9 +43,12 @@ def main():
 
     conn, cur = connect_db_local()
     get_db_info(cur)
+    data_dir = './visualisation_web_app/data_local/2019/12/'
+    if not os.path.isdir(data_dir):
+        os.makedirs(data_dir)
    
     for i, med in enumerate(meds):
-        outfile = './visualisation_web_app/data_local/12/2019/{}datafile.csv'.format(i)
+        outfile = data_dir+'{}datafile.csv'.format(i)
         if med == 'All':
             query = q_all
         else:
