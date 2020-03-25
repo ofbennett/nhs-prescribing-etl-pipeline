@@ -44,7 +44,7 @@ def main():
     get_db_info(cur)
    
     for i, med in enumerate(meds):
-        outfile = './visualisation_web_app/data_local/{}datafile.csv'.format(i)
+        outfile = './visualisation_web_app/data_local/12/2019/{}datafile.csv'.format(i)
         if med == 'All':
             query = q_all
         else:

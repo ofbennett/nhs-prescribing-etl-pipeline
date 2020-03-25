@@ -8,7 +8,8 @@ import configparser
 
 data_dir = './data_cloud/'
 # data_dir = './data_local/'
-data_path = data_dir+'0datafile.csv'
+data_path = data_dir+'2019/12/0datafile.csv'
+
 
 num_of_bars = 30
 
@@ -45,8 +46,8 @@ fig.update_layout(autosize=True,
                 plot_bgcolor=colors['background'],
                 margin=dict(l=150, r=150, t=25, b=0))
 
-dropdown = dcc.Dropdown(
-    id = 'dropdown',
+dropdown_med = dcc.Dropdown(
+    id = 'dropdown-med',
     value = 'All',
     options = [
         {'label': 'All', 'value': 'All'},
@@ -55,6 +56,20 @@ dropdown = dcc.Dropdown(
         {'label': 'Diuretics', 'value': 'Diuretics'},
         {'label': 'Beta Blockers', 'value': 'Beta-Adrenoceptor Blocking Drugs'},
         {'label': 'Bronchodilators', 'value': 'Bronchodilators'},
+    ],
+    style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
+)
+
+dropdown_date = dcc.Dropdown(
+    id = 'dropdown-date',
+    value = '2019_12',
+    options = [
+        {'label': 'December 2019', 'value': '2019_12'},
+        {'label': 'November 2019', 'value': '2019_11'},
+        {'label': 'October 2019', 'value': '2019_10'},
+        {'label': 'September 2019', 'value': '2019_09'},
+        {'label': 'August 2019', 'value': '2019_08'},
+        {'label': 'July 2019', 'value': '2019_07'},
     ],
     style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
@@ -75,9 +90,9 @@ graph = html.Div(children=[
                         'color':colors['text'],
                         'padding':0,
                         'margin-right':40}),
-                html.Div(["Select the type of medication to display:",dropdown],
+                html.Div(["Select the type of medication to display:",dropdown_med,"Select the time period to display:",dropdown_date],
                 style = {'backgroundColor':colors['background'],'width': '25%', 'margin-left': 30}),
-                html.Div(children="Display of Total Spent per Practice on All Prescribing", id = 'map-title', 
+                html.Div(children="Display of Total Spent per Practice on All Prescribing in December 2019", id = 'map-title', 
                     style={'textAlign':'center', 
                         'color':colors['text'],
                         'margin-top': 10,
@@ -110,7 +125,7 @@ mdtext1 = dcc.Markdown(
 
 This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
-At the moment this *only* displays the pattern from prescriptions in the month of November 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
+At the moment this *only* displays the pattern from prescriptions between July-Dec 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
 
 &nbsp;
 
@@ -155,9 +170,9 @@ app.layout = html.Div([graph, barchart, mdtext1, diagram, mdtext2], style={'back
 
 @app.callback(
     [Output('map','figure'), Output('bar-chart','figure'), Output('map-title','children')],
-    [Input('dropdown', 'value')]
+    [Input('dropdown-med', 'value'), Input('dropdown-date', 'value'), Input('dropdown-date', 'options')]
 )
-def update_charts(selected_med):
+def update_charts(selected_med,selected_date,dropdown_date_options):
 
     med_dict = {'All':0,
                 'Antibacterial Drugs':1,
@@ -168,7 +183,13 @@ def update_charts(selected_med):
     label_list = ['All', 'Antibiotics', 'Antiprotozoal Drugs', 'Diuretics', 'Beta Blockers', 'Bronchodilators']
     med_num = med_dict[selected_med]
     selected_med_label = label_list[med_num]
-    data_path = data_dir + '{}datafile.csv'.format(med_num)
+
+    for i in range(len(dropdown_date_options)):
+        if dropdown_date_options[i]['value'] == selected_date:
+            date_label = dropdown_date_options[i]['label']
+            break
+
+    data_path = data_dir + '{year}/{month}/{med_num}datafile.csv'.format(year=selected_date[:4],month=selected_date[5:],med_num=med_num)
     df = pd.read_csv(data_path)
     df['name'] = df['name'].map(lambda x: x.title())
     max_val = df['total_cost'].max()
@@ -198,7 +219,7 @@ def update_charts(selected_med):
                 {'x': df_sorted['name'][:num_of_bars], 'y': df_sorted['total_cost'][:num_of_bars], 'type': 'bar', 'name': 'SF'},
             ],
             'layout': {
-                'title': 'Top {} practices when looking at {} prescribing (only within Nov 2019 at present)'.format(num_of_bars,selected_med_label.lower()),
+                'title': 'Top {} practices when looking at {} prescribing in {}'.format(num_of_bars,selected_med_label.lower(),date_label),
                 'plot_bgcolor': colors['background'],
                 'paper_bgcolor': colors['background'],
                 'margin': dict(l=150, r=150, t=50, b=150),
@@ -208,7 +229,7 @@ def update_charts(selected_med):
             }
         }
 
-    map_title = "Display of Total Spent per Practice on {} Prescribing".format(selected_med_label)
+    map_title = "Display of Total Spent per Practice on {} Prescribing in {}".format(selected_med_label,date_label)
     return fig_map, fig_barchart, map_title
 
 server = app.server # for gunicorn to import 

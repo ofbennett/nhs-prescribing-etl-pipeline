@@ -13,6 +13,8 @@ class StageToRedshiftOperator(BaseOperator):
         IGNOREHEADER 1;
         """
 
+    template_fields = ['s3_key']
+
     @apply_defaults
     def __init__(self,
                  redshift_conn_id="my_redshift_conn",

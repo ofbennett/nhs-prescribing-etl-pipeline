@@ -5,6 +5,7 @@ import os
 import boto3
 import glob
 
+dates = ['2019_07','2019_08','2019_09','2019_10','2019_11','2019_12']
 meds = ['All','Antibacterial Drugs','Antiprotozoal Drugs','Diuretics', 'Beta-Adrenoceptor Blocking Drugs', 'Bronchodilators']
 
 q = """
@@ -14,7 +15,9 @@ JOIN gp_pracs_dim_table gp
 ON(pre.practice_id = gp.gp_prac_id)
 JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
-WHERE bnf.bnf_section=''{}''
+WHERE bnf.bnf_section=''{med}''
+AND pre.month={month}
+AND pre.year={year}
 AND gp.longitude IS NOT NULL
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
@@ -27,6 +30,8 @@ ON(pre.practice_id = gp.gp_prac_id)
 JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
 WHERE gp.longitude IS NOT NULL
+AND pre.month={month}
+AND pre.year={year}
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
 
@@ -48,40 +53,43 @@ def main():
     get_db_info(cur)
 
     print("Running queries and saving to s3...")
-    for i, med in enumerate(meds):
-        if med == 'All':
-            query = q_all
-        else:
-            query = q.format(med)
-        query_final = """
-                UNLOAD('{}')
-                TO 's3://prescribing-data/unload/{}/'
-                IAM_ROLE '{}'
-                CSV
-                HEADER
-                ALLOWOVERWRITE;
-                """.format(query,i,config['CLUSTER']['IAM_ROLE'])
-        cur.execute(query_final)
+    for date in dates:
+        for i, med in enumerate(meds):
+            if med == 'All':
+                query = q_all.format(year=date[:4],month=date[5:])
+            else:
+                query = q.format(med=med,year=date[:4],month=date[5:])
+            query_final = """
+                    UNLOAD('{query}')
+                    TO 's3://prescribing-data/unload/{year}/{month}/{med_num}/'
+                    IAM_ROLE '{iam_role}'
+                    CSV
+                    HEADER
+                    ALLOWOVERWRITE;
+                    """.format(query=query,year=date[:4],month=date[5:],med_num=i,iam_role=config['CLUSTER']['IAM_ROLE'])
+            cur.execute(query_final)
 
     cur.close()
     conn.close()
 
     print("Downloading query results from s3...")
     s3 = boto3.client('s3')
-    for i, med in enumerate(meds):
-        directory = './visualisation_web_app/data_cloud/{}'.format(i)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/'+str(i)+'/')
-        for j, item in enumerate(files['Contents']):
-            s3.download_file('prescribing-data',item['Key'],directory+'/'+str(j)+'.csv')
+    for date in dates:
+        for i, med in enumerate(meds):
+            directory = './visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=date[:4],month=date[5:],med_num=i)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/{year}/{month}/{med_num}'.format(year=date[:4],month=date[5:],med_num=i))
+            for j, item in enumerate(files['Contents']):
+                s3.download_file('prescribing-data',item['Key'],directory+'/'+str(j)+'.csv')
     
     print("Processing downloaded files...")
-    for i, med in enumerate(meds):
-        paths = './visualisation_web_app/data_cloud/{}/*.csv'.format(i)
-        files = glob.glob(paths)
-        df_concat = pd.concat([pd.read_csv(f) for f in files])
-        df_concat.to_csv('./visualisation_web_app/data_cloud/{}datafile.csv'.format(i),index=False)
+    for date in dates:
+        for i, med in enumerate(meds):
+            paths = './visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=date[:4],month=date[5:],med_num=i)
+            files = glob.glob(paths)
+            df_concat = pd.concat([pd.read_csv(f) for f in files])
+            df_concat.to_csv('./visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=date[:4],month=date[5:],med_num=i),index=False)
 
 if __name__ == "__main__":
     main()

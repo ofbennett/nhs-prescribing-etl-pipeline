@@ -189,6 +189,8 @@ LIMIT 3;
 
 drop_all_tables = [pres_staging_table_drop, pres_fact_table_drop, gp_pracs_staging_table_drop, gp_pracs_dim_table_drop,bnf_info_staging_table_drop, bnf_info_dim_table_drop, postcode_info_staging_table_drop]
 
+drop_staging_tables = [pres_staging_table_drop, gp_pracs_staging_table_drop, bnf_info_staging_table_drop, postcode_info_staging_table_drop]
+
 create_all_tables = [pres_staging_table_create, pres_fact_table_create, gp_pracs_staging_table_create, gp_pracs_dim_table_create, bnf_info_staging_table_create, bnf_info_dim_table_create, postcode_info_staging_table_create]
 
 populate_all_staging_tables = [pres_staging_table_populate, gp_prac_staging_table_populate, bnf_info_staging_table_populate, postcode_info_staging_table_populate]

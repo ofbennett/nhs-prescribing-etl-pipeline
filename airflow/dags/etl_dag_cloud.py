@@ -8,7 +8,7 @@ from helpers import sql_queries_cloud
 
 default_args = {
     'owner': 'ofbennett',
-    'start_date': datetime(2020, 1, 2),
+    'start_date': datetime(2019, 12, 1),
     'depends_on_past': False,
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
@@ -46,7 +46,7 @@ pres_staging_table_populate = StageToRedshiftOperator(
     aws_credentials_id="my_aws_conn",
     table="pres_staging_table",
     s3_bucket="prescribing-data",
-    s3_key="2019_11_Nov/T201911PDPI_BNFT.csv",
+    s3_key="2019_12/T201912PDPI_BNFT",
     header=True
 )
 
@@ -57,7 +57,7 @@ gp_prac_staging_table_populate = StageToRedshiftOperator(
     aws_credentials_id="my_aws_conn",
     table="gp_pracs_staging_table",
     s3_bucket="prescribing-data",
-    s3_key="2019_11_Nov/T201911ADDR_BNFT.csv",
+    s3_key="2019_11/T201911ADDR_BNFT",
     header=False
 )
 
