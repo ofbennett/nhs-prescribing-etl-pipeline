@@ -269,7 +269,7 @@ The web app should now be publically available at the domain of your choosing se
 
 There are numerous ways this project could be extended. 
 
-- So far the cloud based ETL pipeline has only been run with a month's worth of data to keep my AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
+- So far the cloud based ETL pipeline has only been run with 6 month's worth of data to keep my AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
 - Make the postcode API calls part of the automated ETL pipeline and include it in the Airflow DAG.
 - Add more types of visualisation to the web app (like a bar chart).
 - Add the ability to select specific regions and time scales to display in the web app.
