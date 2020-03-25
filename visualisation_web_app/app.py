@@ -22,6 +22,7 @@ app = dash.Dash(__name__)
 
 df = pd.read_csv(data_path)
 df['name'] = df['name'].map(lambda x: x.title())
+max_val = df['total_cost'].max()
 
 config = configparser.ConfigParser()
 config.read('./config.cfg')
@@ -34,7 +35,8 @@ fig = px.scatter_mapbox(df,
                         size="total_cost", 
                         hover_name="name", 
                         hover_data=["total_cost"], 
-                        color_continuous_scale=px.colors.sequential.Pinkyl, 
+                        color_continuous_scale=px.colors.sequential.Pinkyl,
+                        range_color=[0,max_val],
                         size_max=15, 
                         zoom=5.5,
                         center={'lat': 52.58,'lon': -1.117},
@@ -188,11 +190,14 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
         if dropdown_date_options[i]['value'] == selected_date:
             date_label = dropdown_date_options[i]['label']
             break
-
+    
+    data_path_ref = data_dir + "2019/12/{med_num}datafile.csv".format(med_num=med_num)
+    df_ref = pd.read_csv(data_path_ref)
+    max_val = df_ref['total_cost'].max()
     data_path = data_dir + '{year}/{month}/{med_num}datafile.csv'.format(year=selected_date[:4],month=selected_date[5:],med_num=med_num)
     df = pd.read_csv(data_path)
     df['name'] = df['name'].map(lambda x: x.title())
-    max_val = df['total_cost'].max()
+    
 
     fig_map = px.scatter_mapbox(df,
                         lat="latitude", 
@@ -202,7 +207,7 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
                         hover_name="name", 
                         hover_data=["total_cost"], 
                         color_continuous_scale=px.colors.sequential.Pinkyl,
-                        range_color=[0,max_val], 
+                        range_color=[0,max_val],
                         size_max=15, 
                         zoom=5.5,
                         mapbox_style='dark')
