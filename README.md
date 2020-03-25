@@ -239,7 +239,7 @@ $ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
 ```
 7. Create the config.cfg file
 ```
-$ cd NHS_Prescribing_ETL_Pipeline
+$ cd NHS_Prescribing_ETL_Pipeline/visualisation_web_app
 $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
