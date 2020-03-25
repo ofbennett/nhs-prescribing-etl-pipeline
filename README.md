@@ -81,7 +81,7 @@ Redshift is well setup to meet this need. The cluster can scale out to meet almo
 ## The Visualisation Web App
 
 <a href="https://www.talktin.com">
-<p align="center"><img src="./resources/map_viz.png" width="800"></p>
+<p align="center"><img src="./resources/map_viz.png" width="900"></p>
 </a>
 
 In order to more easily see the results of running interesting queries against the newly populated Redshift warehouse a web app was built and deployed. This shows a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
