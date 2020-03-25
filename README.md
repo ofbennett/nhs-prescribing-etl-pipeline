@@ -178,6 +178,8 @@ Open a browser and go to `localhost:8080`. This should bring up the Airflow UI w
 
 Next, select the `etl_dag_cloud` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
+Now select the `etl_back_fill_pres_dag_cloud` DAG and turn it "on". This should back fill the `pres_fact_table` with all the available past prescription data (excluding the most recent month which was added by the `etl_dag_cloud` DAG). If all goes well all the task should run successfully and turn green.
+
 The Redshift data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
