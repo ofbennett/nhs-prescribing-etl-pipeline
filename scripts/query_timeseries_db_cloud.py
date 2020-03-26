@@ -3,6 +3,7 @@ import pandas as pd
 import configparser
 import os
 import glob
+import json
 from sql_queries_cloud import (months, years, meds, q_all_prac)
 
 def get_db_info(cur):
@@ -44,6 +45,8 @@ def main():
     cur.close()
     conn.close()
     print(result_dict)
+    with open('../visualisation_web_app/data_cloud/timeseries.json', 'w') as f:
+        json.dump(result_dict, f)
 
 if __name__ == "__main__":
     main()
