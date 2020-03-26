@@ -6,10 +6,8 @@ import plotly.express as px
 import pandas as pd
 import configparser
 
-data_dir = './data_cloud/'
-# data_dir = './data_local/'
+data_dir = './data_local/'
 data_path = data_dir+'2019/12/0datafile.csv'
-
 
 num_of_bars = 30
 
@@ -67,11 +65,6 @@ dropdown_date = dcc.Dropdown(
     value = '2019_12',
     options = [
         {'label': 'December 2019', 'value': '2019_12'},
-        {'label': 'November 2019', 'value': '2019_11'},
-        {'label': 'October 2019', 'value': '2019_10'},
-        {'label': 'September 2019', 'value': '2019_09'},
-        {'label': 'August 2019', 'value': '2019_08'},
-        {'label': 'July 2019', 'value': '2019_07'},
     ],
     style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
