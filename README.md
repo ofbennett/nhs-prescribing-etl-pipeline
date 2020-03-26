@@ -116,6 +116,7 @@ You need to get the data first before running the pipeline. You can download all
 Next you need to get the location metadata for each GP practice in the GP practice dataset. This uses the free API provided by [Postcodes.io](https://postcodes.io). I wrote a Python script which does this. Make sure the file names and paths at the top of this script are correct for your local setup and run it:
 
 ```
+$ cd scripts
 $ python postcode_api.py
 ```
 
@@ -138,7 +139,7 @@ Open a browser and go to `localhost:8080`. This should bring up the Airflow UI. 
 The Postgres data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
 
 ```
-$ cd ..
+$ cd ../scripts/
 $ python query_db_local.py
 ```
 
@@ -183,7 +184,7 @@ Now select the `etl_back_fill_pres_dag_cloud` DAG and turn it "on". This should 
 The Redshift data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
-$ cd ..
+$ cd ../scripts/
 $ python query_db_cloud.py
 ```
 
