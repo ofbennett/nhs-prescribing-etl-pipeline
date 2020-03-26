@@ -8,7 +8,7 @@ from helpers import sql_queries_cloud
 
 default_args = {
     'owner': 'ofbennett',
-    'start_date': datetime(2019, 7, 1),
+    'start_date': datetime(2019, 1, 1),
     'end_date': datetime(2019, 11, 1),
     'depends_on_past': False,
     'retries': 3,
