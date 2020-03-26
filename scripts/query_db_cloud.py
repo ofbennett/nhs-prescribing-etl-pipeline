@@ -76,7 +76,7 @@ def main():
     s3 = boto3.client('s3')
     for date in dates:
         for i, med in enumerate(meds):
-            directory = './visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=date[:4],month=date[5:],med_num=i)
+            directory = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=date[:4],month=date[5:],med_num=i)
             if not os.path.exists(directory):
                 os.makedirs(directory)
             files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/{year}/{month}/{med_num}'.format(year=date[:4],month=date[5:],med_num=i))
@@ -86,10 +86,10 @@ def main():
     print("Processing downloaded files...")
     for date in dates:
         for i, med in enumerate(meds):
-            paths = './visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=date[:4],month=date[5:],med_num=i)
+            paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=date[:4],month=date[5:],med_num=i)
             files = glob.glob(paths)
             df_concat = pd.concat([pd.read_csv(f) for f in files])
-            df_concat.to_csv('./visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=date[:4],month=date[5:],med_num=i),index=False)
+            df_concat.to_csv('../visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=date[:4],month=date[5:],med_num=i),index=False)
 
 if __name__ == "__main__":
     main()

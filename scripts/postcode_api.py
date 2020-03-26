@@ -10,7 +10,7 @@ This script takes a GP practices info CSV file, extracts the postcodes of all th
 """
 
 api_url = "https://api.postcodes.io/postcodes"
-data_path = "../data/2019_11_Nov/T201911ADDR BNFT.csv"
+data_path = "../../data/2019_11_Nov/T201911ADDR BNFT.csv"
 out_json_file_path = './postcode_info.json'
 out_csv_file_path = './postcode_info.csv'
 

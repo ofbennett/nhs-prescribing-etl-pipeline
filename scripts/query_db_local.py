@@ -43,7 +43,7 @@ def main():
 
     conn, cur = connect_db_local()
     get_db_info(cur)
-    data_dir = './visualisation_web_app/data_local/2019/12/'
+    data_dir = '../visualisation_web_app/data_local/2019/12/'
     if not os.path.isdir(data_dir):
         os.makedirs(data_dir)
    
