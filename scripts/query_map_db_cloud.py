@@ -44,11 +44,20 @@ def download_results_from_s3(month, year, med_num,med,s3):
     for j, item in enumerate(files['Contents']):
         s3.download_file('prescribing-data',item['Key'],directory+'/'+str(j)+'.csv')
 
-def process_downloaded_files(month, year, med_num,med):
+def process_downloaded_files(month, year, med_num):
     paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=i)
     files = glob.glob(paths)
     df_concat = pd.concat([pd.read_csv(f) for f in files])
     df_concat.to_csv('../visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=year,month=month,med_num=i),index=False)
+
+def clean_up(month, year, med_num):
+    file_paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=i)
+    dir_path = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=i)
+    files = glob.glob(file_paths)
+    for f in files:
+        os.remove(f)
+    os.rmdir(dir_path)
+
 
 def main():
     config = configparser.ConfigParser()
@@ -75,7 +84,13 @@ def main():
     for year in years:
         for month in months:
             for i, med in enumerate(meds):
-                process_downloaded_files(month, year,i,med)
+                process_downloaded_files(month, year,i)
+    
+    print("Cleaning up files...")
+    for year in years:
+        for month in months:
+            for i, med in enumerate(meds):
+                clean_up(month, year,i)
 
 if __name__ == "__main__":
     main()
