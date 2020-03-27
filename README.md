@@ -12,7 +12,7 @@ This is a cloud-based ETL data pipeline which feeds into a web app visualisation
 
 The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.ofbennett.com). Throughout, I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
-As shown, the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation in the web app was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+As shown, the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisations in the web app were created by running and caching queries related to the amount of medication within a certain category being prescribed by GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
 S3 is a great choice for a large data lake since it will automatically scale to meet any storage need, it's cheap to store and read data, and it's programmatically accessible via the AWS SDK and Airflow hooks.
 
@@ -40,7 +40,7 @@ Before building the ETL pipeline and the web app I carried out an early stage da
 - **Data from these staging tables are transformed and loaded into a data warehouse table schema (see below)**
 - **Automated data quality checks are run to ensure the pipeline ran correctly**
 - A local Python script runs a series of queries against the data warehouse and saves the results as CSV files in an S3 bucket and then also locally
-- These results are sent to the web app which generates a visualisation
+- These results are bundled together with the web app which generates a visualisation once deployed
 
 Apache Airflow is used to schedule and orchestrate the steps in **bold**. The Airflow dependancy DAG is illustrated here:
 
@@ -181,14 +181,15 @@ Next, select the `etl_dag_cloud` DAG and turn it "on". This should set the whole
 
 Now select the `etl_back_fill_pres_dag_cloud` DAG and turn it "on". This should back fill the `pres_fact_table` with all the available past prescription data (excluding the most recent month which was added by the `etl_dag_cloud` DAG). If all goes well all the task should run successfully and turn green.
 
-The Redshift data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_cloud.py) which will do this and save the results into the webapp for later visualisation. Run:
+The Redshift data warehouse is now populated. To run some queries I wrote two Python scripts which will do this and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ../scripts/
-$ python query_db_cloud.py
+$ python query_map_db_cloud.py
+$ python query_timeseries_db_cloud.py
 ```
 
-If all goes well you should now be able to run the web app and visualise the results of the queries you just ran!
+These might take a little while to run. When they finish, if all has gone well you should now be able to run the web app and visualise the results of the queries you just ran!
 
 ## How To Run the Web App
 
@@ -217,7 +218,7 @@ $ pip install -r requirements.txt
 ```
 Next run the app:
 ```
-$ python app.py
+$ python app_local.py
 ```
 This should start a flask server locally on port 8050. Open a web browser and visit `localhost:8050`. You should see the app up and running!
 
@@ -272,9 +273,9 @@ The web app should now be publically available at the domain of your choosing se
 
 There are numerous ways this project could be extended. 
 
-- So far the cloud based ETL pipeline has only been run with 6 month's worth of data to keep my AWS costs down. After some minor adjustments the plan is to run it next with a few years worth of data.
+- So far the cloud based ETL pipeline has only been run with a year's worth of data to keep my AWS costs down. After some minor adjustments the plan is to run it next with all 10 year's worth of data.
 - Make the postcode API calls part of the automated ETL pipeline and include it in the Airflow DAG.
-- Add more types of visualisation to the web app (like a bar chart).
+- Add more types of visualisation to the web app (like a bar chart) [DONE]
 - Add the ability to select specific regions and time scales to display in the web app.
 - Deploy the Airflow/Postgres scheduler onto a cloud instance rather than running it locally.
 - Develop "Infrastructure as Code" for the tech stack used in the project. Could use [CloudFormation](https://aws.amazon.com/cloudformation/), [Terraform](https://www.terraform.io), or simple boto3 AWS SDK scripts.
