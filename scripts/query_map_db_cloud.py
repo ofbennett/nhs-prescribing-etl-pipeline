@@ -4,7 +4,7 @@ import configparser
 import os
 import boto3
 import glob
-from sql_queries_cloud import (months, years, meds, q, q_all_meds, q_all_year, q_all_med_all_year)
+from sql_queries_cloud import (months, years, meds, q, q_all_med, q_all_year, q_all_med_all_year)
 
 def get_db_info(cur):
     cur.execute('SELECT version()')
@@ -17,7 +17,7 @@ def connect_db_redshift(config):
     cur = conn.cursor()
     return conn, cur
 
-def run_query_and_save_to_s3(month, year, med_num,med,conn,cur):
+def run_query_and_save_to_s3(month, year, med_num,med,conn,cur,config):
     if med == 'All' and month == 'All':
         query = q_all_med_all_year.format(year=year)
     elif med == 'All' and not month == 'All':
@@ -33,26 +33,26 @@ def run_query_and_save_to_s3(month, year, med_num,med,conn,cur):
             CSV
             HEADER
             ALLOWOVERWRITE;
-            """.format(query=query,year=year,month=month,med_num=i,iam_role=config['CLUSTER']['IAM_ROLE'])
+            """.format(query=query,year=year,month=month,med_num=med_num,iam_role=config['CLUSTER']['IAM_ROLE'])
     cur.execute(query_final)
 
 def download_results_from_s3(month, year, med_num,med,s3):
-    directory = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=i)
+    directory = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=med_num)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=i))
+    files = s3.list_objects(Bucket = 'prescribing-data', Prefix='unload/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=med_num))
     for j, item in enumerate(files['Contents']):
         s3.download_file('prescribing-data',item['Key'],directory+'/'+str(j)+'.csv')
 
 def process_downloaded_files(month, year, med_num):
-    paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=i)
+    paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=med_num)
     files = glob.glob(paths)
     df_concat = pd.concat([pd.read_csv(f) for f in files])
-    df_concat.to_csv('../visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=year,month=month,med_num=i),index=False)
+    df_concat.to_csv('../visualisation_web_app/data_cloud/{year}/{month}/{med_num}datafile.csv'.format(year=year,month=month,med_num=med_num),index=False)
 
 def clean_up(month, year, med_num):
-    file_paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=i)
-    dir_path = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=i)
+    file_paths = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}/*.csv'.format(year=year,month=month,med_num=med_num)
+    dir_path = '../visualisation_web_app/data_cloud/{year}/{month}/{med_num}'.format(year=year,month=month,med_num=med_num)
     files = glob.glob(file_paths)
     for f in files:
         os.remove(f)
@@ -69,7 +69,7 @@ def main():
     for year in years:
         for month in months:
             for i, med in enumerate(meds):
-                run_query_and_save_to_s3(month, year,i,med,conn,cur)
+                run_query_and_save_to_s3(month, year,i,med,conn,cur,config)
     cur.close()
     conn.close()
 

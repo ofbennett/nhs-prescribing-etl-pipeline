@@ -4,7 +4,7 @@ import configparser
 import os
 import glob
 import json
-from sql_queries_cloud import (months, years, meds, q_all_prac)
+from sql_queries_cloud import (months, years, meds, q_all_prac, q_all_prac_all_med)
 
 def get_db_info(cur):
     cur.execute('SELECT version()')
@@ -18,9 +18,12 @@ def connect_db_redshift(config):
     return conn, cur
 
 def run_query(month, year, med_num,med,conn,cur):
-    query_final = q_all_prac.format(med=med,year=year,month=month)
+    if med == 'All':
+        query_final = q_all_prac_all_med.format(year=year,month=month)
+    else:
+        query_final = q_all_prac.format(med=med,year=year,month=month)
     cur.execute(query_final)
-    result = cur.fetchall()
+    result = cur.fetchall()[0][0]
     return result
 
 def main():
@@ -32,8 +35,6 @@ def main():
     result_dict = {}
     print("Running queries...")
     for i, med in enumerate(meds):
-        if med == 'All':
-            continue
         result_dict[med] = {}
         for year in years:
             result_dict[med][year] = []
@@ -44,7 +45,6 @@ def main():
                 result_dict[med][year].append(result)
     cur.close()
     conn.close()
-    print(result_dict)
     with open('../visualisation_web_app/data_cloud/timeseries.json', 'w') as f:
         json.dump(result_dict, f)
 

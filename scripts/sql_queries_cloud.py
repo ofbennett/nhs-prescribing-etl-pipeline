@@ -16,7 +16,7 @@ AND gp.longitude IS NOT NULL
 GROUP BY gp.name, gp.longitude, gp.latitude
 """
 
-q_all_meds = """
+q_all_med = """
 SELECT SUM(pre.nic) as total_cost, gp.name, gp.longitude, gp.latitude
 FROM pres_fact_table pre
 JOIN gp_pracs_dim_table gp
@@ -59,8 +59,16 @@ SELECT SUM(pre.nic) as total_cost
 FROM pres_fact_table pre
 JOIN bnf_info_dim_table bnf
 ON(pre.bnf_code=bnf.bnf_code)
-WHERE bnf.bnf_section=''{med}''
+WHERE bnf.bnf_section='{med}'
 AND pre.month={month}
 AND pre.year={year}
 """
 
+q_all_prac_all_med = """
+SELECT SUM(pre.nic) as total_cost
+FROM pres_fact_table pre
+JOIN bnf_info_dim_table bnf
+ON(pre.bnf_code=bnf.bnf_code)
+WHERE pre.month={month}
+AND pre.year={year}
+"""
