@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import configparser
+import json
 
 data_dir = './data_cloud/'
 data_path = data_dir+'2019/12/0datafile.csv'
@@ -70,6 +71,13 @@ dropdown_date = dcc.Dropdown(
         {'label': 'September 2019', 'value': '2019_09'},
         {'label': 'August 2019', 'value': '2019_08'},
         {'label': 'July 2019', 'value': '2019_07'},
+        {'label': 'June 2019', 'value': '2019_06'},
+        {'label': 'May 2019', 'value': '2019_05'},
+        {'label': 'April 2019', 'value': '2019_04'},
+        {'label': 'March 2019', 'value': '2019_03'},
+        {'label': 'February 2019', 'value': '2019_02'},
+        {'label': 'January 2019', 'value': '2019_01'},
+        {'label': 'Whole of 2019', 'value': '2019_All'},
     ],
     style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
@@ -118,14 +126,45 @@ barchart = dcc.Graph(
         }
     )
 
+ts_data_path = './data_cloud/timeseries.json'
+with open(ts_data_path) as f:
+    ts_data_json = json.load(f)
+
+ts_data = ts_data_json['All']['2019']
+months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+
+ts_graph = dcc.Graph(
+    figure=dict(
+        data=[
+            dict(
+                x=months,
+                y=ts_data,
+                name='Medication',
+                marker=dict(
+                    color='rgb(55, 83, 109)'
+                )
+            )
+        ],
+        layout=dict(
+            title='Change in amount of All prescribing across all practices through 2019',
+            plot_bgcolor= colors['background'],
+            paper_bgcolor= colors['background'],
+            margin=dict(l=150, r=150, t=40, b=30),
+            font = dict(color=colors['text'])
+        )
+    ),
+    style={'height': 300},
+    id='ts-graph'
+)
+
 
 mdtext1 = dcc.Markdown(
 """
 # What is this?
 
-This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
+This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS (in GBP) of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
-At the moment this *only* displays the pattern from prescriptions between July-Dec 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
+At the moment this *only* displays the pattern from prescriptions in 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
 
 &nbsp;
 
@@ -148,7 +187,7 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 diagram = html.Img(src="assets/diagram.png",style = {"width": "65%", "display": "block" , "margin-left": "auto", "margin-right": "auto"})
 
 mdtext2 = dcc.Markdown("""
-Essentially the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisation being demonstrated above was created by running a query related to the amount of medication within a certain category being prescribed in all the GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
+Essentially the data is transformed into a useful schema and loaded into an AWS Redshift data warehouse. Once this has been done it is simple to run any SQL query you like against the tables in Redshift. The visualisations being demonstrated above were created by running and caching queries related to the amount of medication within a certain category being prescribed in GP practices across England. The various ETL steps are joined together in a DAG and orchestrated with Apache Airflow.
 
 &nbsp;
 
@@ -166,10 +205,10 @@ I'm Oscar. I like learning things from data. I'm a data scientist and software e
 style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10}
 )
 
-app.layout = html.Div([graph, barchart, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
+app.layout = html.Div([graph, barchart, ts_graph, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 
 @app.callback(
-    [Output('map','figure'), Output('bar-chart','figure'), Output('map-title','children')],
+    [Output('map','figure'), Output('bar-chart','figure'), Output('map-title','children'), Output('ts-graph','figure')],
     [Input('dropdown-med', 'value'), Input('dropdown-date', 'value'), Input('dropdown-date', 'options')]
 )
 def update_charts(selected_med,selected_date,dropdown_date_options):
@@ -189,13 +228,16 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
             date_label = dropdown_date_options[i]['label']
             break
     
-    data_path_ref = data_dir + "2019/12/{med_num}datafile.csv".format(med_num=med_num)
-    df_ref = pd.read_csv(data_path_ref)
-    max_val = df_ref['total_cost'].max()
     data_path = data_dir + '{year}/{month}/{med_num}datafile.csv'.format(year=selected_date[:4],month=selected_date[5:],med_num=med_num)
     df = pd.read_csv(data_path)
     df['name'] = df['name'].map(lambda x: x.title())
-    
+
+    if selected_date[5:] == 'All':
+        max_val = df['total_cost'].max()
+    else:
+        data_path_ref = data_dir + "2019/12/{med_num}datafile.csv".format(med_num=med_num)
+        df_ref = pd.read_csv(data_path_ref)
+        max_val = df_ref['total_cost'].max()
 
     fig_map = px.scatter_mapbox(df,
                         lat="latitude", 
@@ -231,9 +273,36 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
                 }
             }
         }
-
     map_title = "Display of Total Spent per Practice on {} Prescribing in {}".format(selected_med_label,date_label)
-    return fig_map, fig_barchart, map_title
+
+    ts_data_path = './data_cloud/timeseries.json'
+    with open(ts_data_path) as f:
+        ts_data_json = json.load(f)
+    ts_data = ts_data_json[selected_med]['2019']
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+
+    fig_ts_graph = dict(
+                        data=[
+                            dict(
+                                x=months,
+                                y=ts_data,
+                                name='Medication',
+                                marker=dict(
+                                    color='rgb(55, 83, 109)'
+                                )
+                            )
+                        ],
+                        layout=dict(
+                            title='Change in amount of {} prescribing across all practices through 2019'.format(selected_med_label),
+                            plot_bgcolor= colors['background'],
+                            paper_bgcolor= colors['background'],
+                            margin=dict(l=150, r=150, t=40, b=30),
+                            font = dict(color=colors['text'])
+                        )
+                    )
+
+    
+    return fig_map, fig_barchart, map_title, fig_ts_graph
 
 server = app.server # for gunicorn to import 
 if __name__ == '__main__':
