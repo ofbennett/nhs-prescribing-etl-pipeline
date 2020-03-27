@@ -4,6 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+import numpy as np
 import configparser
 import json
 
@@ -21,7 +22,7 @@ app = dash.Dash(__name__)
 
 df = pd.read_csv(data_path)
 df['name'] = df['name'].map(lambda x: x.title())
-max_val = df['total_cost'].max()
+max_val = np.sort(df['total_cost'].values)[-3]
 
 config = configparser.ConfigParser()
 config.read('./config.cfg')
@@ -233,11 +234,11 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
     df['name'] = df['name'].map(lambda x: x.title())
 
     if selected_date[5:] == 'All':
-        max_val = df['total_cost'].max()
+        max_val = np.sort(df['total_cost'].values)[-3]
     else:
         data_path_ref = data_dir + "2019/12/{med_num}datafile.csv".format(med_num=med_num)
         df_ref = pd.read_csv(data_path_ref)
-        max_val = df_ref['total_cost'].max()
+        max_val = np.sort(df_ref['total_cost'].values)[-3]
 
     fig_map = px.scatter_mapbox(df,
                         lat="latitude", 
