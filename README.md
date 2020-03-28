@@ -8,7 +8,7 @@ This is a cloud-based ETL data pipeline which feeds into a web app visualisation
 
 ## The Architecture
 
-<p align="center"><img src="./resources/architecture.png" width="850"></p>
+<p align="center"><img src="./resources/architecture.jpg" width="850"></p>
 
 The ETL data pipeline was built using Postgres, Apache Airflow, AWS Redshift, and S3. This web app was built using Flask, Plotly Dash and Mapbox and is currently hosted on DigitalOcean [here](https://www.ofbennett.com). Throughout, I make extensive use of Docker and Docker-Compose to manage the various deployment environments for the different tools and databases.
 
