@@ -269,7 +269,7 @@ $ docker-compose -f docker-compose-prod.yml up -d --build
 
 The web app should now be publically available at the domain of your choosing served securely over https!
 
-**NB: I am not a security expert. The above demonstrates the basics of setting up SSL and HTTPS on a web app, but there is a lot more that can a should be done to secure a mission-critical website and server.**
+**NB: I am not a security expert. The above demonstrates the basics of setting up SSL and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
 ## Next Steps
 
