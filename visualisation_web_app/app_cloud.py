@@ -135,25 +135,23 @@ ts_data = ts_data_json['All']['2019']
 months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
 ts_graph = dcc.Graph(
-    figure=dict(
-        data=[
-            dict(
-                x=months,
-                y=ts_data,
-                name='Medication',
-                marker=dict(
-                    color='rgb(55, 83, 109)'
-                )
-            )
-        ],
-        layout=dict(
-            title='Change in amount of All prescribing across all practices through 2019',
-            plot_bgcolor= colors['background'],
-            paper_bgcolor= colors['background'],
-            margin=dict(l=150, r=150, t=40, b=30),
-            font = dict(color=colors['text'])
-        )
-    ),
+    figure = {
+            'data': [
+                        {
+                            'x': months,
+                            'y': ts_data,
+                            'name': 'Medication',
+                            'marker': {'color': 'rgb(55, 83, 109)'}
+                        }
+            ],
+            'layout': {
+                'title': 'Change in amount of All prescribing across all practices through 2019',
+                'plot_bgcolor': colors['background'],
+                'paper_bgcolor': colors['background'],
+                'margin': dict(l=150, r=150, t=40, b=30),
+                'font': {'color': colors['text']}
+            }
+    },
     style={'height': 300},
     id='ts-graph'
 )
@@ -282,25 +280,23 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
     ts_data = ts_data_json[selected_med]['2019']
     months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
-    fig_ts_graph = dict(
-                        data=[
-                            dict(
-                                x=months,
-                                y=ts_data,
-                                name='Medication',
-                                marker=dict(
-                                    color='rgb(55, 83, 109)'
-                                )
-                            )
-                        ],
-                        layout=dict(
-                            title='Change in amount of {} prescribing across all practices through 2019'.format(selected_med_label),
-                            plot_bgcolor= colors['background'],
-                            paper_bgcolor= colors['background'],
-                            margin=dict(l=150, r=150, t=40, b=30),
-                            font = dict(color=colors['text'])
-                        )
-                    )
+    fig_ts_graph = {
+                    'data': [
+                                {
+                                    'x': months,
+                                    'y': ts_data,
+                                    'name': 'Medication',
+                                    'marker': {'color': 'rgb(55, 83, 109)'}
+                                }
+                    ],
+                    'layout': {
+                        'title': 'Change in amount of {} prescribing across all practices through 2019'.format(selected_med_label),
+                        'plot_bgcolor': colors['background'],
+                        'paper_bgcolor': colors['background'],
+                        'margin': dict(l=150, r=150, t=40, b=30),
+                        'font': {'color': colors['text']}
+                    }
+    }
 
     
     return fig_map, fig_barchart, map_title, fig_ts_graph
