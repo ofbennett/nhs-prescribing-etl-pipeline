@@ -132,11 +132,11 @@ This version of the pipeline runs ETL on your local machine and sets up a data w
 $ cd airflow
 $ docker-compose -f airflow_local_docker_compose.yml up -d --build
 ```
-This will start docker containers with airflow backed by a Postgres database along another Postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./resources/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
+This will start docker containers with airflow backed by a Postgres database along another Postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./scripts/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI. Ignore the "boto missing" and "etl_dag_cloud dag broken" error messages - they simply mean you haven't setup the cloud based ETL in this case. Select the `etl_dag_local` DAG and turn it "on". This should set the whole pipeline running. You can watch the pipeline progress in either the Graph or Tree view. If all goes well all the task should run successfully and turn green.
 
-The Postgres data warehouse is now populated. To run some queries I wrote a [Python script](./query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
+The Postgres data warehouse is now populated. To run some queries I wrote a [Python script](./scripts/query_db_local.py) which will do this for you and save the results into the webapp for later visualisation. Run:
 
 ```
 $ cd ../scripts/
@@ -170,7 +170,7 @@ Next run:
 $ cd airflow
 $ docker-compose -f airflow_cloud_docker_compose.yml up -d --build
 ```
-This will start docker containers with Airflow backed by a Postgres database running and linked together in a private network. Next you need to copy the local data to the S3 data lake. This can be done using the `aws s3 cp` command. An [example script](./resources/copy_data_to_data_lake.sh) is provided which can be adapted to carry this out easily.
+This will start docker containers with Airflow backed by a Postgres database running and linked together in a private network. Next you need to copy the local data to the S3 data lake. This can be done using the `aws s3 cp` command. An [example script](./scripts/copy_data_to_data_lake.sh) is provided which can be adapted to carry this out easily.
 
 Open a browser and go to `localhost:8080`. This should bring up the Airflow UI window. You will now need to create two custom airflow connections:
 
