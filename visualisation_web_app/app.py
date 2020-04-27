@@ -35,26 +35,6 @@ max_val = np.sort(df['total_cost'].values)[-3] # picks the 3rd highest for top o
 
 px.set_mapbox_access_token(config['MAPBOX']['MAPBOX_TOKEN'])
 
-fig = px.scatter_mapbox(df,
-                        lat="latitude", 
-                        lon="longitude", 
-                        color="total_cost", 
-                        size="total_cost", 
-                        hover_name="name", 
-                        hover_data=["total_cost"], 
-                        color_continuous_scale=px.colors.sequential.Pinkyl,
-                        range_color=[0,max_val],
-                        size_max=15, 
-                        zoom=5.5,
-                        center={'lat': 52.58,'lon': -1.117},
-                        mapbox_style='dark')
-
-fig.update_layout(autosize=True,
-                height=640,
-                paper_bgcolor=colors['background'],
-                plot_bgcolor=colors['background'],
-                margin=dict(l=150, r=150, t=25, b=0))
-
 dropdown_med = dcc.Dropdown(
     id = 'dropdown-med',
     value = 'All',
@@ -119,25 +99,12 @@ graph = html.Div(children=[
                         'color':colors['text'],
                         'margin-top': 10,
                         'font-size': '20px'}),
-                dcc.Graph(figure=fig, id = 'map')], 
-                style={'backgroundColor':colors['background']})
+                html.Div(style={'backgroundColor':colors['background']}, id = 'map')])
 
 df_sorted = df.sort_values(by=['total_cost'], ascending=False)
 barchart = dcc.Graph(
         id='bar-chart',
-        figure={
-            'data': [
-                {'x': df_sorted['name'][:num_of_bars], 'y': df_sorted['total_cost'][:num_of_bars], 'type': 'bar', 'name': 'SF'},
-            ],
-            'layout': {
-                'plot_bgcolor': colors['background'],
-                'paper_bgcolor': colors['background'],
-                'margin': dict(l=150, r=150, t=0, b=0),
-                'font': {
-                    'color':colors['text']
-                }
-            }
-        }
+        figure={}
     )
 
 ts_data_path = './data_cloud/timeseries.json'
@@ -148,23 +115,7 @@ ts_data = ts_data_json['All']['2019']
 months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
 ts_graph = dcc.Graph(
-    figure = {
-            'data': [
-                        {
-                            'x': months,
-                            'y': ts_data,
-                            'name': 'Medication',
-                            'marker': {'color': 'rgb(55, 83, 109)'}
-                        }
-            ],
-            'layout': {
-                'title': 'Change in amount of All prescribing across all practices through 2019',
-                'plot_bgcolor': colors['background'],
-                'paper_bgcolor': colors['background'],
-                'margin': dict(l=150, r=150, t=40, b=30),
-                'font': {'color': colors['text']}
-            }
-    },
+    figure = {},
     style={'height': 300},
     id='ts-graph'
 )
@@ -220,7 +171,7 @@ style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlig
 app.layout = html.Div([graph, barchart, ts_graph, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 
 @app.callback(
-    [Output('map','figure'), Output('bar-chart','figure'), Output('map-title','children'), Output('ts-graph','figure')],
+    [Output('map','children'), Output('bar-chart','figure'), Output('map-title','children'), Output('ts-graph','figure')],
     [Input('dropdown-med', 'value'), Input('dropdown-date', 'value'), Input('dropdown-date', 'options')]
 )
 def update_charts(selected_med,selected_date,dropdown_date_options):
@@ -270,6 +221,7 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
                     plot_bgcolor=colors['background'],
                     margin=dict(l=150, r=150, t=25, b=10),
                     )
+    map_graph = dcc.Graph(figure=fig_map),
     df_sorted = df.sort_values(by=['total_cost'], ascending=False)
     fig_barchart={
             'data': [
@@ -312,7 +264,7 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
     }
 
     
-    return fig_map, fig_barchart, map_title, fig_ts_graph
+    return map_graph, fig_barchart, map_title, fig_ts_graph
 
 server = app.server # for gunicorn to import 
 if __name__ == '__main__':
