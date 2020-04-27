@@ -268,4 +268,4 @@ def update_charts(selected_med,selected_date,dropdown_date_options):
 
 server = app.server # for gunicorn to import 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
