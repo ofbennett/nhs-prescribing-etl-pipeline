@@ -216,9 +216,11 @@ $ conda create -n web_app python=3.7 pip
 $ source activate web_app
 $ pip install -r requirements.txt
 ```
-Next run the app:
+Then set the `MODE` config option to 'local' to display a sample dataset or to 'cloud' to use the full dataset produced by the cloud ETL pipeline.
+
+Finally run the app:
 ```
-$ python app_local.py
+$ python app.py
 ```
 This should start a flask server locally on port 8050. Open a web browser and visit `localhost:8050`. You should see the app up and running!
 
