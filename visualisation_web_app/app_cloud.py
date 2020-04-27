@@ -8,7 +8,16 @@ import numpy as np
 import configparser
 import json
 
-data_dir = './data_cloud/'
+config = configparser.ConfigParser()
+config.read('./config.cfg')
+
+mode = config['MODE']['MODE']
+
+if mode == 'local':
+    data_dir = './data_local/'
+elif mode == 'cloud':
+    data_dir = './data_cloud/'
+
 data_path = data_dir+'2019/12/0datafile.csv'
 
 num_of_bars = 30
@@ -24,8 +33,6 @@ df = pd.read_csv(data_path)
 df['name'] = df['name'].map(lambda x: x.title())
 max_val = np.sort(df['total_cost'].values)[-3] # picks the 3rd highest for top of range
 
-config = configparser.ConfigParser()
-config.read('./config.cfg')
 px.set_mapbox_access_token(config['MAPBOX']['MAPBOX_TOKEN'])
 
 fig = px.scatter_mapbox(df,
@@ -62,24 +69,30 @@ dropdown_med = dcc.Dropdown(
     style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
 
+if mode == 'local':
+    dates = [{'label': 'December 2019', 'value': '2019_12'}]
+elif mode == 'cloud':
+    dates = [
+            {'label': 'December 2019', 'value': '2019_12'},
+            {'label': 'November 2019', 'value': '2019_11'},
+            {'label': 'October 2019', 'value': '2019_10'},
+            {'label': 'September 2019', 'value': '2019_09'},
+            {'label': 'August 2019', 'value': '2019_08'},
+            {'label': 'July 2019', 'value': '2019_07'},
+            {'label': 'June 2019', 'value': '2019_06'},
+            {'label': 'May 2019', 'value': '2019_05'},
+            {'label': 'April 2019', 'value': '2019_04'},
+            {'label': 'March 2019', 'value': '2019_03'},
+            {'label': 'February 2019', 'value': '2019_02'},
+            {'label': 'January 2019', 'value': '2019_01'},
+            {'label': 'Whole of 2019', 'value': '2019_All'},
+        ]
+
+
 dropdown_date = dcc.Dropdown(
     id = 'dropdown-date',
     value = '2019_12',
-    options = [
-        {'label': 'December 2019', 'value': '2019_12'},
-        {'label': 'November 2019', 'value': '2019_11'},
-        {'label': 'October 2019', 'value': '2019_10'},
-        {'label': 'September 2019', 'value': '2019_09'},
-        {'label': 'August 2019', 'value': '2019_08'},
-        {'label': 'July 2019', 'value': '2019_07'},
-        {'label': 'June 2019', 'value': '2019_06'},
-        {'label': 'May 2019', 'value': '2019_05'},
-        {'label': 'April 2019', 'value': '2019_04'},
-        {'label': 'March 2019', 'value': '2019_03'},
-        {'label': 'February 2019', 'value': '2019_02'},
-        {'label': 'January 2019', 'value': '2019_01'},
-        {'label': 'Whole of 2019', 'value': '2019_All'},
-    ],
+    options = dates,
     style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
 )
 
