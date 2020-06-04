@@ -1,5 +1,19 @@
 # Medical Prescribing Patterns Across NHS GP Practices
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Architecutre](#the-architecture)
+- [Data Sources](#the-data-sources)
+- [The ETL Pipeline](#the-etl-pipeline)
+- [The Data Warehouse Schema](#the-data-warehouse-schema)
+- [Data Quality Checks](#data-quality-checks)
+- [Alternative Data Scenarios](#alternative-data-scenarios)
+- [The Visualisation Web App](#the-visualisation-web-app)
+- [How To Run the ETL Pipeline](#how-to-run-the-etl-pipeline)
+- [How To Run the Web App](#how-to-run-the-web-app)
+- [Next Steps](#next-steps)
+
 ## Overview
 This is a cloud-based ETL data pipeline which feeds into a web app visualisation (currently hosted [here](https://www.ofbennett.com)). The goals are:
 - To demonstrate patterns of prescribing across all the GP practices in England
