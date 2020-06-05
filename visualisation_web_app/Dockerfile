@@ -12,6 +12,7 @@ RUN venv/bin/pip install gunicorn
 COPY app.py ./app.py
 COPY data_cloud ./data_cloud
 COPY assets ./assets
+COPY markdown ./markdown
 COPY boot.sh ./boot.sh
 COPY config.cfg ./config.cfg
 RUN chmod +x ./boot.sh
