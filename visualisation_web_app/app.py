@@ -28,7 +28,12 @@ colors = {
     'text': 'black'
 }
 
-app = dash.Dash(__name__)
+external_stylesheets = [
+"https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css",
+"assets/my_style.css"
+]
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 df = pd.read_csv(data_path)
 df['name'] = df['name'].map(lambda x: x.title())
@@ -47,7 +52,7 @@ dropdown_med = dcc.Dropdown(
         {'label': 'Beta Blockers', 'value': 'Beta-Adrenoceptor Blocking Drugs'},
         {'label': 'Bronchodilators', 'value': 'Bronchodilators'},
     ],
-    style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5}
+    style = {'backgroundColor':'LightGray', 'color':'black', 'width': '100%', 'margin-top':5, 'margin-bottom':5}
 )
 
 if mode == 'local':
@@ -122,11 +127,11 @@ ts_graph = dcc.Graph(
 )
 
 
-mdtext1 = dcc.Markdown(md1, style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
+mdtext1 = dcc.Markdown(md1, style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':100, 'margin-right':100, 'margin-top':40, 'padding':10})
 
 diagram = html.Img(src="assets/diagram.png",style = {"width": "65%", "display": "block" , "margin-left": "auto", "margin-right": "auto"})
 
-mdtext2 = dcc.Markdown(md2, style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':80, 'margin-right':80, 'padding':10})
+mdtext2 = dcc.Markdown(md2, style={'color':colors['text'], 'backgroundColor':colors['background'], 'textAlign':'center', 'margin-left':100, 'margin-right':100, 'padding':10})
 
 app.layout = html.Div([graph, barchart, ts_graph, mdtext1, diagram, mdtext2], style={'backgroundColor':colors['background']})
 

@@ -1,6 +1,8 @@
 md1 = """
 # What is this?
 
+&nbsp;
+
 This is a visualisation of patterns of GP prescribing across England. Different types of medication can be displayed - you can select the type of medication using the dropdown menu in the top left. The "total cost" to the NHS (in GBP) of medication prescribed by a practice within a medication category was used as a summary statistic of the "amount" prescribed.
 
 At the moment this *only* displays the pattern from prescriptions in 2019. The plan is to extend it to display any pattern from the past 10 years in due course. 
@@ -8,6 +10,8 @@ At the moment this *only* displays the pattern from prescriptions in 2019. The p
 &nbsp;
 
 # Where did the data come from?
+
+&nbsp;
 
 The majority of the data comes from a large volume (~100GB) of anonymised GP prescription records which have been released publicly by [NHS digital](https://digital.nhs.uk). The data can be downloaded from their website [here](https://digital.nhs.uk/data-and-information/publications/statistical/practice-level-prescribing-data) and a detailed description of what the data contains can be found [here](https://digital.nhs.uk/data-and-information/areas-of-interest/prescribing/practice-level-prescribing-in-england-a-summary/practice-level-prescribing-data-more-information). This public sector information is published and made available under the [Open Government Licence v3.0](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 
@@ -19,6 +23,8 @@ Finally, a free and open source API called [Postcodes.io](https://postcodes.io) 
 
 # How was it made?
 
+&nbsp;
+
  This web app was built using **Flask**, **Plotly Dash** and **Mapbox** and is currently hosted on DigitalOcean. There is a very large volume of data to process in order to generate these visualisations. The data pipeline therefore presented an interesting engineering problem. The partially cloud-based architecture I settled on is outlined in the schematic below. The ETL data pipeline was built using **Postgres**, **Apache Airflow**, **AWS Redshift**, and **S3**.
  """
 
@@ -29,11 +35,15 @@ Essentially the data is transformed into a useful schema and loaded into an AWS 
 
 # Can I see the code?
 
+&nbsp;
+
 Of course! It's kept in my GitHub repo [here](https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline). The ETL pipeline can be either run locally with a small sample dataset or run using AWS resources with a large or full dataset. **NB: Running the pipeline on your AWS account will cost money!** Feel free to raise issues or contribute.
 
 &nbsp;
 
 # Who am I?
+
+&nbsp;
 
 I'm Oscar. I like learning things from data. I'm a data scientist and software engineer with a particular focus on biomedical and healthcare applications. If you're curious you can checkout my [Github](https://github.com/ofbennett) or my [LinkedIn](https://www.linkedin.com/in/oscar-bennett/).
 
