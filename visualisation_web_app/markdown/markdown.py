@@ -45,6 +45,6 @@ Of course! It's kept in my GitHub repo [here](https://github.com/ofbennett/NHS_P
 
 &nbsp;
 
-I'm Oscar. I like learning things from data. I'm a data scientist and software engineer with a particular focus on biomedical and healthcare applications. If you're curious you can checkout my [Github](https://github.com/ofbennett) or my [LinkedIn](https://www.linkedin.com/in/oscar-bennett/).
+I'm Oscar. I'm a data scientist and software engineer with a particular focus on biomedical and healthcare applications. If you're interested you can checkout my [Github](https://github.com/ofbennett) or my [LinkedIn](https://www.linkedin.com/in/oscar-bennett/).
 
 """
