@@ -282,8 +282,16 @@ $ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/
 ```
 $ docker-compose -f docker-compose-prod.yml up -d --build
 ```
-
 The web app should now be publically available at the domain of your choosing served securely over https!
+
+Optional extra:
+
+14. Run `crontab -e` and add the following cron job to the file presented:
+
+```
+0 0 1 * * NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
+```
+Then change permissions with `chmod` to make the `NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs monthly. 
 
 **NB: I am not a security expert. The above demonstrates the basics of setting up SSL and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
