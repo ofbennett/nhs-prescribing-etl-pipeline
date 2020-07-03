@@ -37,7 +37,7 @@ Essentially the data is transformed into a useful schema and loaded into an AWS 
 
 &nbsp;
 
-Of course! It's kept in my GitHub repo [here](https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline). The ETL pipeline can be either run locally with a small sample dataset or run using AWS resources with a large or full dataset. **NB: Running the pipeline on your AWS account will cost money!** Feel free to raise issues or contribute.
+Of course! It's kept in my GitHub repo [here](https://github.com/ofbennett/nhs-prescribing-etl-pipeline). The ETL pipeline can be either run locally with a small sample dataset or run using AWS resources with a large or full dataset. **NB: Running the pipeline on your AWS account will cost money!** Feel free to raise issues or contribute.
 
 &nbsp;
 
