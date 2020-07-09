@@ -28,12 +28,14 @@ colors = {
     'text': 'black'
 }
 
-external_stylesheets = [
-"https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css",
-"assets/my_style.css"
-]
+# Use a Bootstrap external style sheet like this:
+# external_stylesheets = [
+# "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css",
+# "assets/my_style.css"
+# ]
+# app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
 df = pd.read_csv(data_path)
 df['name'] = df['name'].map(lambda x: x.title())
