@@ -293,7 +293,7 @@ Optional extra:
 ```
 Then change permissions with `chmod` to make the `NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs monthly. 
 
-**NB: I am not a security expert. The above demonstrates the basics of setting up SSL and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
+**NB: I am not a security expert. The above demonstrates the basics of setting up SSL/TLS and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
 ## Next Steps
 
