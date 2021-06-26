@@ -91,7 +91,7 @@ graph = html.Div(children=[
                         'margin':0, 
                         'padding':20,
                         'text-decoration': 'underline'}),
-                html.Div(children="A visualisation of publicly available GP prescription records from NHS digital", 
+                html.Div(children="A visualisation of publicly available GP prescription statistics from NHS digital", 
                     style={'textAlign':'center', 
                         'color':colors['text'],
                         'padding':5}),
