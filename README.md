@@ -241,10 +241,10 @@ This should start a flask server locally on port 8050. Open a web browser and vi
 ### How to deploy on a remote host using a production server
 
 1. Spin up a Linux instance using a cloud provider like [DigitalOcean](https://www.digitalocean.com) or [AWS Lightsail](https://aws.amazon.com/lightsail/).
-2. Get a domain name and direct it at the public IP of your Linux instance
+2. Get a domain name and direct it at the public IP of your instance
 3. SSH into the instance
 4. Create a non-root user with sudo access
-5. Setup the firewall to only allow ssh, http, and https inbound traffic 
+5. Setup the firewall to only allow ssh, http, and https inbound traffic (alternatively an equivalent AWS security group)
 ```
 $ ufw status
 $ ufw delete allow ...
@@ -291,7 +291,7 @@ Optional extra:
 ```
 0 0 1 * * NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
 ```
-Then change permissions with `chmod` to make the `NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs monthly. 
+Then change permissions with `chmod` to make the `NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
 
 **NB: I am not a security expert. The above demonstrates the basics of setting up SSL/TLS and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
