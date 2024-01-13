@@ -12,7 +12,7 @@ services:
       - "80:80"
   
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:latest
     depends_on: 
       - nginx
     volumes:
