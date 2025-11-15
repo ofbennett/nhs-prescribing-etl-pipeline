@@ -115,8 +115,8 @@ I've included details on how to run this process below.
 If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Then create a suitable Python virtual environment.
 
 ```
-$ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
-$ cd NHS_Prescribing_ETL_Pipeline
+$ git clone https://github.com/ofbennett/nhs_prescribing_etl_pipeline.git
+$ cd nhs_prescribing_etl_pipeline
 $ conda create -n etl_pipeline python=3.7 pip
 $ source activate etl_pipeline
 $ pip install -r requirements.txt
@@ -144,7 +144,7 @@ This version of the pipeline runs ETL on your local machine and sets up a data w
 
 ```
 $ cd airflow
-$ docker-compose -f airflow_local_docker_compose.yml up -d --build
+$ docker compose -f airflow_local_docker_compose.yml up -d --build
 ```
 This will start docker containers with airflow backed by a Postgres database along another Postgres database (the warehouse) running and linked together in a private network. Next you need to copy the data **into** the warehouse Postgres container so it can access it. This can be done using the `cp` docker command. An [example script](./scripts/copy_data_into_pg_container.sh) is provided which can be adapted to carry this out easily.
 
@@ -253,15 +253,15 @@ $ ufw status
 ```
 6. Clone the repo
 ```
-$ git clone https://github.com/ofbennett/NHS_Prescribing_ETL_Pipeline.git
+$ git clone https://github.com/ofbennett/nhs_prescribing_etl_pipeline.git
 ```
 7. Create the config.cfg file
 ```
-$ cd NHS_Prescribing_ETL_Pipeline/visualisation_web_app
+$ cd nhs_prescribing_etl_pipeline/visualisation_web_app
 $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
-8. Use the nano editor to enter your Mapbox token. Then save and exit nano.
+8. Use the nano editor to enter your Mapbox token and set MODE to 'cloud'. Then save and exit nano.
 9. Choose a domain name and replace all occurrences of `ofbennett.com` with your chosen domain in the following files:
 - `docker-compose-init-ssl.yml`
 - `nginx_init_ssl/app.conf`
@@ -269,18 +269,18 @@ $ nano config.cfg
 10. Replace `example@email.com` in `docker-compose-init-ssl.yml` with your email address
 11. Setup SSL/TSL with Let's Encrypt and certbot:
 ```
-$ docker-compose -f docker-compose-init-ssl.yml up -d --build
+$ docker compose -f docker-compose-init-ssl.yml up -d --build
 $ docker ps --all   # certbot/certbot should have exited with status 0
 $ ls   # a new ssl/ directory should be present with the SSL certificate and key
-$ docker-compose -f docker-compose-init-ssl.yml down
+$ docker compose -f docker-compose-init-ssl.yml down
 ```
 12. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
 ```
-$ openssl dhparam -out ~/NHS_Prescribing_ETL_Pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
+$ openssl dhparam -out ~/nhs_prescribing_etl_pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
 ```
 13. Run the whole production Flask/Gunicorn/Ngnix stack:
 ```
-$ docker-compose -f docker-compose-prod.yml up -d --build
+$ docker compose -f docker-compose-prod.yml up -d --build
 ```
 The web app should now be publically available at the domain of your choosing served securely over https!
 
@@ -289,9 +289,9 @@ Optional extra:
 14. Run `crontab -e` and add the following cron job to the file presented:
 
 ```
-0 0 1 * * NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
+0 0 1 * * nhs_prescribing_etl_pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
 ```
-Then change permissions with `chmod` to make the `NHS_Prescribing_ETL_Pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
+Then change permissions with `chmod` to make the `nhs_prescribing_etl_pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
 
 **NB: I am not a security expert. The above demonstrates the basics of setting up SSL/TLS and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
