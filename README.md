@@ -115,8 +115,8 @@ I've included details on how to run this process below.
 If you don't already have them, you will need to [install Docker](https://docs.docker.com/install/) and [install Docker-Compose](https://docs.docker.com/compose/install/) on your local machine. Then create a suitable Python virtual environment.
 
 ```
-$ git clone https://github.com/ofbennett/nhs_prescribing_etl_pipeline.git
-$ cd nhs_prescribing_etl_pipeline
+$ git clone https://github.com/ofbennett/nhs-prescribing-etl-pipeline.git
+$ cd nhs-prescribing-etl-pipeline
 $ conda create -n etl_pipeline python=3.7 pip
 $ source activate etl_pipeline
 $ pip install -r requirements.txt
@@ -253,11 +253,11 @@ $ ufw status
 ```
 6. Clone the repo
 ```
-$ git clone https://github.com/ofbennett/nhs_prescribing_etl_pipeline.git
+$ git clone https://github.com/ofbennett/nhs-prescribing-etl-pipeline.git
 ```
 7. Create the config.cfg file
 ```
-$ cd nhs_prescribing_etl_pipeline/visualisation_web_app
+$ cd nhs-prescribing-etl-pipeline/visualisation_web_app
 $ cp config_template.cfg config.cfg
 $ nano config.cfg
 ```
@@ -276,7 +276,7 @@ $ docker compose -f docker-compose-init-ssl.yml down
 ```
 12. Generate strong [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange) coefficients for added security
 ```
-$ openssl dhparam -out ~/nhs_prescribing_etl_pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
+$ openssl dhparam -out ~/nhs-prescribing-etl-pipeline/visualisation_web_app/ssl/certbot/conf/dhparam.pem 2048
 ```
 13. Run the whole production Flask/Gunicorn/Ngnix stack:
 ```
@@ -289,9 +289,9 @@ Optional extra:
 14. Run `crontab -e` and add the following cron job to the file presented:
 
 ```
-0 0 1 * * nhs_prescribing_etl_pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
+0 0 1 * * nhs-prescribing-etl-pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
 ```
-Then change permissions with `chmod` to make the `nhs_prescribing_etl_pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
+Then change permissions with `chmod` to make the `nhs-prescribing-etl-pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
 
 **NB: I am not a security expert. The above demonstrates the basics of setting up SSL/TLS and HTTPS on a web app, but there is a lot more that can and should be done to secure a mission-critical website and server.**
 
