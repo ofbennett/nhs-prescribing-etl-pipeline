@@ -289,7 +289,7 @@ Optional extra:
 14. Run `crontab -e` and add the following cron job to the file presented:
 
 ```
-0 0 1 * * nhs-prescribing-etl-pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
+0 0 1 * * sudo nhs-prescribing-etl-pipeline/visualisation_web_app/reboot.sh >> cron.log 2>&1
 ```
 Then change permissions with `chmod` to make the `nhs-prescribing-etl-pipeline/visualisation_web_app/reboot.sh` file executable. This will setup a cron job to kill and then recreate fresh docker containers hosting the web app once a month. This will wipe the server logs and renew the SSL certificate monthly. 
 
